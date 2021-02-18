@@ -1,0 +1,98 @@
+.components-datetime__time-field-time {
+	display: none;
+}
+
+#easqy-records-adm {
+	.wrapper {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-evenly;
+	}
+
+	.records-table {
+		width: 600px;
+		border-spacing: 0;
+
+		td,
+		th {
+			padding: 0.5em 1em;
+		}
+
+		tr {
+			cursor: pointer;
+		}
+
+		tr:nth-child(2n + 1) {
+			background-color: #e0e0e0;
+		}
+	}
+
+	.records.selected {
+		color: white !important;
+		background-color: #0073aa !important;
+	}
+
+	.date-control {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+
+		.date-label {
+			margin-bottom: 8px;
+			margin-right: 0.75em;
+		}
+	}
+}
+
+.easqy-button-bar {
+	width: 100%;
+	margin-top: 1em;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: baseline;
+}
+
+#easqy-records-header {
+	padding: 2em;
+}
+
+#easqy-current-record {
+	width: 600px;
+	height: 400px;
+
+	table {
+		width: 100%;
+		border-spacing: 0px;
+	}
+
+	td {
+		padding: 0.4em;
+	}
+
+	tr:nth-child(2n + 1) {
+		background-color: #eaeaea;
+	}
+
+	.label {
+		padding-right: 1em;
+		text-align: right;
+		width: 50%;
+	}
+
+	.value {
+		font-weight: bold;
+		text-align: left;
+	}
+}
+
+#easqy-add-record {
+	max-width: 600px;
+}
+
+#easqy-record-add-buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
