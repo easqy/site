@@ -1,0 +1,37 @@
+/*
+ Theme Name:   Hueman Child
+ Theme URI:    http://example.com/hueman-child/
+ Description:  Twenty Fifteen Child Theme
+ Author:       Franck Chopin
+ Author URI:   http://example.com
+ Template:     hueman
+ Version:      1.0.0
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+ Text Domain:  huemanchild
+*/
+
+.main {
+/*	background-color: red !important */
+}
+.page-title {
+/*	background-color: red !important*/
+}
+
+#menu-menu-principal-1 {
+	background-image: url(https://lh3.googleusercontent.com/2HxGurpA8kkjL5PffQvoTmNzrpyQMkMS2ja4k5CMZ0zU5z2UQ0_LBfjbpuLfd8Ud7BJW4AledFCuu_PWP7Y7YOpUmA6mtJ4i6yVBl3vCCvHDx2otWnl_L1HfEJx_2p8B66F7bhkL=w728-h171-no);
+	background-repeat: no-repeat;
+	background-size: auto 75%;
+	background-position: Right 0px center;
+}
+
+.frachop-post-heading-featured {
+	display: none;
+}
+
+@media screen and (min-width: 1024px) {
+	.frachop-post-heading-featured {
+		display: block;
+	}
+}

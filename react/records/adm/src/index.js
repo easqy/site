@@ -1,147 +1,83 @@
 
-import { Component, render, useState } from '@wordpress/element';
-import CompetitionRecords from './competitions_records';
+import { Component, render } from '@wordpress/element';
+import { Button } from '@wordpress/components';
+
+import Records from './records';
 import './main.scss';
-import $ from "jquery";
-import EditRecord from './edit_record';
 
 const ViewType = {
-	loading: 0,
-	error: 1,
-	competitions: 2,
-	add: 3,
-	modify: 4
+	admin: 0,
+	users: 1,
+	records: 2,
 };
 Object.freeze(ViewType);
 
 
-class RecordsAdmin extends Component {
+class RecordsAdminUsers extends Component {
+	render() {
+		return <div className="wrap">
+			<h1 class="wp-heading-inline">Records</h1>
+			TODO
+			</div>
+	}
+}
+
+
+class RecordsAdministration extends Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			viewType: ViewType.loading,
-		};
-
-		this.props = { ...this.props, records: [], athletes: [], categories: [], genres: [], epreuves: [], ra: [] }
+			viewType: ViewType.admin
+		}
 	}
 
-	componentDidMount() {
-		const me = this;
-		$.ajax({
-			url: easqy_records_adm.ajaxurl,
-			method: "POST",
-			data: {
-				action: "easqy_records",
-			},
-			success: function (data) {
-				const { records, athletes, ra, categories, genres, epreuves } = data.data;
-				console.log(data.data);
-
-				me.props.categories = categories;
-				me.props.epreuves = epreuves;
-				me.props.genres = genres;
-				me.props.athletes = athletes;
-				me.props.records = records;
-				me.props.ra = ra;
-
-				me.setState({
-					viewType: ViewType.competitions
-				});
-			},
-			error: (data) => {
-				console.log("error", data);
-				me.setState({ viewType: ViewType.error });
-			},
-		});
-	}
-
-	doDelRecord(rId) {
-		const me = this;
-		$.ajax({
-			url: easqy_records_adm.ajaxurl,
-			method: "POST",
-			data: {
-				action: "easqy_record_del",
-				recordId: rId
-			},
-			success: function (data) {
-				console.log('record id ', rId, 'deleted');
-			},
-			error: (data) => {
-				console.log("error", data);
-				me.setState({ viewType: ViewType.error });
-			},
-		});
-	}
 
 	render() {
+		const Content = () => {
 
-		const {
-			categories,
-			epreuves,
-			genres,
-			records,
-			ra,
-			athletes
-		} = this.props;
+			switch (this.state.viewType) {
 
-		const {
-			viewType
-		} = this.state;
+				case ViewType.admin:
+					return <div className="wrap">
+						<h1 class="wp-heading-inline">Records</h1>
+						<div className="easqy-button-bar">
+							<Button
+								isSecondary
+								onClick={() => { this.setState({ viewType: ViewType.users }) }}
+							>Gerer les utilisateurs</Button>
+							<Button
+								isSecondary
+								onClick={() => { this.setState({ viewType: ViewType.records }) }}
+							>Gerer les records</Button>
+						</div>
+					</div>
 
-		const header = () => (
-			<div>
-				<h1 class="wp-heading-inline">Records</h1>&nbsp;
-				{(viewType === ViewType.competitions) && (
-					<a
-						href="#"
-						className={"page-title-action"}
-						onClick={(e) => { this.setState({ viewType: ViewType.add }) }}
-					>
-						Ajouter
-					</a>
-				)}
-			</div>
-		);
+				case ViewType.records:
+					return <Records />
 
-		const competitionRecords = () => (
-			<CompetitionRecords
-				categories={categories}
-				epreuves={epreuves}
-				genres={genres}
-				athletes={athletes}
-				records={records}
-				ra={ra}
-				doDelRecord={(rId) => { this.doDelRecord(rId) }}
-			/>);
+				case ViewType.users:
+					return <RecordsAdminUsers />
 
-		const addRecord = () => (
-			<EditRecord
-				createMode={true}
-				categories={categories}
-				epreuves={epreuves}
-				genres={genres}
-				athletes={athletes}
-				records={records}
-				ra={ra}
-				onAthletesChanged={() => { }}
-				onCancel={() => { this.setState({ viewType: ViewType.competitions }) }}
-			/>);
+				default:
+					return null;
+			}
+		}
 
-		return (
-			<>
-				{header()}
-				{(viewType === ViewType.competitions) && (competitionRecords())}
-				{(viewType === ViewType.add) && (addRecord())}
-			</>
-		)
+		return <div className="wrap"><Content /></div>
 	}
 }
 
+
+
+
 (function () {
+	const eltUsers = document.getElementById('easqy-records-adm-users');
+	if (eltUsers)
+		render(<RecordsAdministration />, eltUsers);
+
 	const elt = document.getElementById('easqy-records-adm');
 	if (elt)
-		render(<RecordsAdmin />, elt);
+		render(<Records />, elt);
 })();
 

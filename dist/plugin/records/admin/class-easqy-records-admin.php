@@ -22,8 +22,6 @@
  */
 class Easqy_Records_Admin {
 
-    private $admin_colors;
-
 	public function __construct( ) {
 	}
 
@@ -68,8 +66,6 @@ class Easqy_Records_Admin {
             $user->add_cap(Easqy_Records::MANAGE_CAPABILITY, true);
     }
 
-
-
     public function define_menus()
     {
         add_submenu_page(
@@ -88,12 +84,19 @@ class Easqy_Records_Admin {
             wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
         }
 
-        $users = get_users('role=editor');
-        foreach ( $users as $user ) {
-            echo '<span>' . esc_html( $user->display_name ) . '</span>';
-        }
+        if ( current_user_can( 'manage_options' ) ) {
 
-         echo '<div id="easqy-records-adm" class="wrap">records</div>';
+            echo '<div id="easqy-records-adm-users"></div>';
+
+            /*
+            $users = get_users('role=administrator');
+            foreach ($users as $user) {
+                echo '<span>' . esc_html($user->display_name) . '</span>';
+            }
+            */
+        }
+        else
+            echo '<div id="easqy-records-adm"></div>';
     }
 
 	/**
