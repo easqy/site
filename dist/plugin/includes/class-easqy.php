@@ -60,7 +60,7 @@ class Easqy {
         $this->define_admin_hooks();
         $this->define_public_hooks();
 
-        $records= new Easqy_Records($this);
+        $records= new Easqy_Childs($this);
     }
 
     /**
@@ -85,27 +85,27 @@ class Easqy {
          * The class responsible for orchestrating the actions and filters of the
          * core plugin.
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-easqy-loader.php';
+        require_once EASQY_DIR . '/includes/class-easqy-loader.php';
 
         /**
          * The class responsible for defining internationalization functionality
          * of the plugin.
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-easqy-i18n.php';
+        require_once EASQY_DIR . '/includes/class-easqy-i18n.php';
 
         /**
          * The class responsible for defining all actions that occur in the admin area.
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-easqy-admin.php';
+        require_once EASQY_DIR . '/admin/class-easqy-admin.php';
 
         /**
          * The class responsible for defining all actions that occur in the public-facing
          * side of the site.
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-easqy-public.php';
+        require_once EASQY_DIR . '/public/class-easqy-public.php';
 
-        /** **/
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'records/class-easqy-records.php';
+        /** CHILDS **/
+        require_once EASQY_DIR . '/childs/class-easqy-childs.php';
 
         $this->loader = new Easqy_Loader();
 
@@ -150,10 +150,13 @@ class Easqy {
     private function define_public_hooks() {
 
         $plugin_public = new Easqy_Public( );
-
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+        $this->loader->add_action('wp_head', $this, 'wp_head');
+    }
 
+    public function wp_head() {
+        echo '<script>const easqy_ajaxurl="' . admin_url( 'admin-ajax.php' ) . '";</script>';
     }
 
     /**

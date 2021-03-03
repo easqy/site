@@ -5,7 +5,7 @@ class Easqy_Records_Activator
 {
     public static function activate() {
 
-        require_once EASQY_DIR . '/records/includes/class-easqy-records-db.php';
+        require_once EASQY_CHILDS_DIR . '/records/includes/class-easqy-records-db.php';
         Easqy_Records_DB::activate();
 
         //update_user_meta(3, 'easqy_records_can_manage', '1');

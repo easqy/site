@@ -23,7 +23,7 @@
 class Easqy_Activator {
 
 	public static function activate() {
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'records/includes/class-easqy-records-activator.php';
+        require_once EASQY_CHILDS_DIR . '/records/includes/class-easqy-records-activator.php';
         Easqy_Records_Activator::activate();
     }
 

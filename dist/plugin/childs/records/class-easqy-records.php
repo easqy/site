@@ -5,7 +5,7 @@ class Easqy_Records
 {
     public const MANAGE_CAPABILITY = 'easqy_manage_records';
 
-    public function __construct($easqy)
+    public function __construct(Easqy $easqy)
     {
         $this->load_dependencies();
         $this->define_admin_hooks($easqy->get_loader());
@@ -14,9 +14,10 @@ class Easqy_Records
 
     public function load_dependencies()
     {
-        require_once EASQY_DIR . '/records/includes/class-easqy-records-common.php';
-        require_once EASQY_DIR . '/records/includes/class-easqy-records-db.php';
-        require_once EASQY_DIR . '/records/admin/class-easqy-records-admin.php';
+        $dir = dirname(__FILE__);
+        require_once $dir . '/includes/class-easqy-records-common.php';
+        require_once $dir . '/includes/class-easqy-records-db.php';
+        require_once $dir . '/admin/class-easqy-records-admin.php';
     }
 
     public function set_locale(){

@@ -1,0 +1,19 @@
+.easqy-shortcode-latest-results {
+	display: flex;
+	flex-direction: column;
+	font-size: 0.75em;
+
+	.easqy-latest-result {
+		margin-bottom: 0.5em;
+		border-bottom: 1px solid rgba(0, 153, 0, 0.4);
+	}
+
+	.easqy-result-podium {
+		font-weight: bold;
+	}
+	sup {
+		line-height: 75%;
+		vertical-align: text-top;
+		font-size: 75%;
+	}
+}
