@@ -146,8 +146,6 @@ class Easqy_Loader {
             add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
         }
 
-        error_log('Easqy_Loader::run');
-        error_log( print_r( $this->shortcodes, true ) );
         foreach ( $this->shortcodes as $hook ) {
             add_shortcode( $hook['hook'], array( $hook['component'], $hook['callback'] ) );
         }

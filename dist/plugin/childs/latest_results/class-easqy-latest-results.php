@@ -1,6 +1,6 @@
 <?php
 
-class Easqy_Shortcodes_Latest_Results
+class Easqy_Latest_Results
 {
     public function __construct(Easqy $easqy) {
 
@@ -19,8 +19,8 @@ class Easqy_Shortcodes_Latest_Results
     private function define_public_hooks(Easqy_Loader $loader)
     {
         $loader->add_shortcode('easqy_latest_results', $this, 'latest_results');
-        $loader->add_action( 'wp_ajax_easqy_sc_latest_results', $this, 'ajax_easqy_sc_latest_results' );
-        $loader->add_action( 'wp_ajax_nopriv_easqy_sc_latest_results', $this, 'ajax_easqy_sc_latest_results' );
+        $loader->add_action( 'wp_ajax_easqy_sc_latest_results', $this, 'ajax_latest_results' );
+        $loader->add_action( 'wp_ajax_nopriv_easqy_sc_latest_results', $this, 'ajax_latest_results' );
 
     }
 
@@ -119,7 +119,7 @@ class Easqy_Shortcodes_Latest_Results
         return $result;
     }
 
-    public function ajax_easqy_sc_latest_results() {
+    public function ajax_latest_results() {
 
         $currentYear = intval(date("Y"));
         $result = self::extract_latest_results($currentYear, 10);

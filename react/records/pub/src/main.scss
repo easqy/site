@@ -1,0 +1,127 @@
+#easqy-records {
+	.records {
+		.epreuve-family-access {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: space-evenly;
+		}
+
+		.components-button-group {
+			text-align: center;
+		}
+
+		button.components-button {
+			background-color: transparent;
+			border: 0px;
+			padding: 0.8em;
+			margin: 0.5em;
+			transition: 0.3s;
+			color: black;
+			border-radius: 0.25em;
+			cursor: pointer;
+		}
+		button.components-button.is-pressed {
+			background-color: rgb(13, 35, 102);
+			color: rgba(255, 255, 255, 0.8);
+		}
+
+		button.components-button:hover {
+			background-color: rgba(13, 35, 102, 0.2);
+			color: black;
+		}
+
+		button.components-buttddon:active {
+			background-color: rgba(13, 35, 102, 0.8);
+			color: rgba(255, 255, 255, 0.8);
+		}
+
+		a.components-button {
+			margin: 1em;
+			text-decoration: none;
+		}
+	}
+
+	.epreuve-family {
+		.family-name {
+			text-align: center;
+			font-size: 2em;
+			font-weight: bold;
+			display: none;
+		}
+
+		.epreuve {
+			font-size: 0.75em;
+
+			.epreuve-name {
+				text-align: center;
+				font-size: 2em;
+				font-weight: bold;
+				margin-bottom: 1em;
+			}
+
+			.container {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				justify-content: space-evenly;
+
+				.recordyear {
+					background: rgb(255, 0, 0, 0.1);
+				}
+
+				.record {
+					background: #fff;
+				}
+
+				.record,
+				.recordyear {
+					border: 1px solid rgba(0, 0, 0, 0.2);
+					border-radius: 10px;
+					margin: 0.5em;
+					box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.08);
+
+					.inner {
+						/*max-width: 12em;*/
+						padding: 1em;
+						text-align: center;
+
+						.categorie {
+							text-align: right;
+							font-size: 1em;
+						}
+
+						.nom {
+							padding: 0.75em;
+							font-size: 1.25em;
+							font-weight: bold;
+							white-space: nowrap;
+						}
+						.perf {
+							font-size: 1.25em;
+							font-weight: 200;
+
+							.delta {
+								background-image: url(./wind.svg);
+								background-repeat: no-repeat;
+								margin-left: 1em;
+								padding-left: 1.5em;
+								font-size: 0.75em;
+							}
+						}
+						.date {
+							padding: 0.75em 0.75em 0 1em;
+							font-size: 0.75em;
+							line-height: 2em;
+						}
+						.lieu {
+							padding: 0em 0.75em 0.75em 0.75em;
+							font-size: 0.75em;
+							line-height: 2em;
+						}
+					}
+				}
+			}
+		}
+	}
+}

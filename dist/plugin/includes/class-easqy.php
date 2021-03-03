@@ -156,7 +156,7 @@ class Easqy {
     }
 
     public function wp_head() {
-        echo '<script>const easqy_ajaxurl="' . admin_url( 'admin-ajax.php' ) . '";</script>';
+        echo '<script>const easqy={ajaxurl:"' . admin_url( 'admin-ajax.php' ) . '"};</script>';
     }
 
     /**

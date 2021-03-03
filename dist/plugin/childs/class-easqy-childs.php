@@ -13,14 +13,14 @@ class Easqy_Childs
         $this->define_public_hooks();
 
         new Easqy_Records($easqy);
-        new Easqy_Shortcodes($easqy);
+        new Easqy_Latest_Results($easqy);
     }
 
 
     private function load_dependencies() {
         $dir = dirname(__FILE__);
         require_once $dir . '/records/class-easqy-records.php';
-        require_once $dir . '/shortcodes/class-easqy-shortcodes.php';
+        require_once $dir . '/latest_results/class-easqy-latest-results.php';
     }
 
     private function define_admin_hooks() {

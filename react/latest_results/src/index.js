@@ -17,7 +17,7 @@ class Latest_results extends Component {     // instead of: ...extends React.Com
 	componentDidMount() {
 		const me = this;
 		$.ajax({
-			url: easqy_ajaxurl,
+			url: easqy.ajaxurl,
 			method: "POST",
 			data: {
 				action: "easqy_sc_latest_results",

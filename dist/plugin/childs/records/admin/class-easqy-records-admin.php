@@ -27,12 +27,12 @@ class Easqy_Records_Admin {
 
     public function define_hooks( $loader )
     {
+
         $loader->add_action('admin_menu', $this, 'define_menus' );
+
+        // admin_enqueue_scripts is used for enqueuing both scripts and styles.
         $loader->add_action('admin_enqueue_scripts', $this, 'enqueue_styles');
         $loader->add_action('admin_enqueue_scripts', $this, 'enqueue_scripts');
-
-        $loader->add_action('wp_ajax_easqy_records', $this, 'ajax_records');
-        $loader->add_action('wp_ajax_easqy_record_del', $this, 'ajax_record_del');
 
         $loader->add_action('set_current_user', $this, 'set_current_user');
 
@@ -99,21 +99,14 @@ class Easqy_Records_Admin {
             echo '<div id="easqy-records-adm"></div>';
     }
 
-	/**
-	 * Register the stylesheets for the admin area.
-	 *
-	 * @since    1.0.0
-	 */
 	public function enqueue_styles() {
-        wp_enqueue_style(EASQY_NAME . '-records-adm', plugins_url('js/index.css', __FILE__ ),
-        ['editor-buttons','wp-components','wp-block-editor']);
+        wp_enqueue_style(
+            EASQY_NAME . '-records-adm',
+            plugins_url('js/index.css', __FILE__ ),
+            ['editor-buttons','wp-components','wp-block-editor']
+        );
 	}
 
-	/**
-	 * Register the JavaScript for the admin area.
-	 *
-	 * @since    1.0.0
-	 */
 	public function enqueue_scripts() {
 
         $script_asset = require( plugin_dir_path(__FILE__) . 'js/index.asset.php' );
@@ -132,64 +125,5 @@ class Easqy_Records_Admin {
         wp_add_inline_script($handle, $inlineCode,'before');
 	}
 
-	public function ajax_records() {
-
-	    $a = array();
-	    foreach( Easqy_Records_DB::athletes() as $row)
-	        $a []= array( 'i' => intval( $row['id'] ), 'n' => $row['nom'], 'p' => $row['prenom']);
-
-        $r = array();
-        foreach( Easqy_Records_DB::records() as $row)
-            $r []= array(
-                'i' => intval( $row['id'] ),
-                'c' => intval($row['categorie']),
-                'e' => intval($row['epreuve']),
-                'in' => intval($row['indoor']),
-                'g' => intval($row['genre']),
-                'd' => $row['date'],
-                'l' => $row['lieu'],
-                'p' => $row['performance'],
-                'f' => $row['infos']
-            );
-
-        $ra = array();
-        foreach( Easqy_Records_DB::recordsAthletes() as $row) {
-            $item = array(
-                'r' => intval($row['record']),
-                'a' => intval($row['athlete'])
-            );
-            if ($row['categorie'])
-                $item['c'] = intval($row['categorie']);
-
-            $ra [] = $item;
-        }
-
-        $result = array(
-            'status' => 'ok',
-            'genres' => Easqy_Records_Common::GENRES,
-            'categories' => Easqy_Records_Common::CATEGORIES,
-            'epreuves' => Easqy_Records_Common::EPREUVES,
-            'athletes' => $a,
-            'records' => $r,
-            'ra' => $ra
-        );
-        wp_send_json_success( $result );
-    }
-
-    public function ajax_record_del() {
-	    if (!isset($_POST['recordId']))
-        {
-            wp_send_json_error( array('status' => 'error', 'message' => 'no record id') );
-            return;
-        }
-
-        $recordId = $_POST['recordId'];
-        $result = Easqy_Records_DB::deleteRecord($recordId);
-
-        $result = array(
-            'status' => 'ok'
-        );
-        wp_send_json_success($result);
-    }
 
 }
