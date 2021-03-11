@@ -1,6 +1,6 @@
 
 import { Component } from '@wordpress/element';
-import CompetitionRecords from './competitions_records';
+import Competitions from './competitions';
 import $ from "jquery";
 import EditRecord from './edit_record';
 
@@ -29,6 +29,7 @@ export default class Records extends Component {
 	componentDidMount() {
 		this.loadRecords();
 	}
+
 	loadRecords() {
 
 		this._k = this._k + 1;
@@ -37,7 +38,8 @@ export default class Records extends Component {
 
 		const me = this;
 		$.ajax({
-			url: easqy_records_adm.ajaxurl,
+			// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+			url: ajaxurl,
 			method: "GET",
 			data: {
 				action: "easqy_records",
@@ -45,7 +47,7 @@ export default class Records extends Component {
 			},
 			success: function (data) {
 				const { records, athletes, ra, categories, genres, epreuves } = data.data;
-				console.log(data.data);
+				//console.log(data.data);
 
 				me.props.categories = categories;
 				me.props.epreuves = epreuves;
@@ -108,7 +110,7 @@ export default class Records extends Component {
 				if (!data.success)
 					me.setState({ viewType: ViewType.error });
 				else {
-					console.log('record id ', rec, 'deleted', data);
+					console.log('record id ', rec, 'saved', data);
 					me.loadRecords();
 				}
 			},
@@ -118,7 +120,6 @@ export default class Records extends Component {
 			},
 		});
 	}
-
 
 	render() {
 
@@ -151,8 +152,8 @@ export default class Records extends Component {
 			</div>
 		);
 
-		const competitionRecords = () => (
-			<CompetitionRecords
+		const competitions = () => (
+			<Competitions
 				key={this._k}
 				categories={categories}
 				epreuves={epreuves}
@@ -160,6 +161,7 @@ export default class Records extends Component {
 				athletes={athletes}
 				records={records}
 				ra={ra}
+				currentRecordId={this.state.currentRecord.i || -1}
 				doDelRecord={(rId) => { this.doDelRecord(rId) }}
 				doModifyRecord={(record) => { this.setState({ currentRecord: record, viewType: ViewType.modify }) }}
 			/>);
@@ -197,7 +199,7 @@ export default class Records extends Component {
 		return (
 			<div id="easqy-records-adm" className="wrap">
 				{header()}
-				{(viewType === ViewType.competitions) && (competitionRecords())}
+				{(viewType === ViewType.competitions) && (competitions())}
 				{(viewType === ViewType.add) && (addRecord())}
 				{(viewType === ViewType.modify) && (modifyRecord())}
 			</div>

@@ -15,7 +15,7 @@ export default class CompetitionRecords extends Component {
 		} = this.props;
 
 		this.state = {
-			currentRecordId: -1
+			currentRecordId: this.props.currentRecordId || -1
 		};
 	}
 
@@ -43,7 +43,7 @@ export default class CompetitionRecords extends Component {
 					{records.length} records, {athletes.length} athletes.
 				</div>
 				<div className={'wrapper'}>
-					<div>
+					<div id={'easqy-current-competitions'}>
 						<CompetitionTable
 							categories={categories}
 							epreuves={epreuves}
@@ -52,24 +52,10 @@ export default class CompetitionRecords extends Component {
 							onCurrentChanged={(rId) => this.onCurrentChanged(rId)}
 							currentRecordId={currentRecordId}
 						/>
+						<hr />
 					</div>
 					<div id={'easqy-current-record'}>
 						{(currentRecordId >= 0) &&
-							/*
-							<CurrentRecord
-								key={this.state.currentRecordId}
-								createMode={false}
-								categories={categories}
-								epreuves={epreuves}
-								genres={genres}
-								athletes={athletes}
-								records={records}
-								ra={ra}
-								onAthletesChanged={() => { }}
-								onCancel={() => { }}
-								record={record}
-							/>
-							*/
 							<CurrentRecord
 								record={record}
 								athletes={athletes}

@@ -5,10 +5,16 @@ class Easqy_Records_Ajax
 {
     public function define_hooks( $loader )
     {
+	    // nopriv for users that are not logged in
         $loader->add_action('wp_ajax_easqy_records', $this, 'get_records' );
         $loader->add_action('wp_ajax_nopriv_easqy_records', $this, 'get_records' );
         $loader->add_action('wp_ajax_easqy_record_del', $this, 'del_record');
 	    $loader->add_action('wp_ajax_easqy_record_save', $this, 'save_record');
+
+	    $loader->add_action('wp_ajax_easqy_record_users', $this, 'users');
+	    $loader->add_action('wp_ajax_easqy_record_user_add', $this, 'user_add');
+	    $loader->add_action('wp_ajax_easqy_record_user_remove', $this, 'user_remove');
+
     }
 
     static private function check_nonce(){
@@ -111,5 +117,87 @@ class Easqy_Records_Ajax
 		wp_send_json_success($result);
 	}
 
+	public function users() {
+		self::check_nonce();
+
+		$result= array();
+		foreach (get_users() as $u)
+		{
+			if ($u->ID !== 1) {
+
+				$user = [ 'i' => $u->ID, 'd' => $u->display_name ];
+				$user['a'] = ((get_current_user_id() === $u->ID) || in_array( 'administrator', (array) $u->roles )) ? 1 : 0;
+				$user['c'] = $u->has_cap(Easqy_Records::MANAGE_CAPABILITY) ? 1 : 0;
+				$result []= $user;
+			}
+
+			//$u->remove_cap(Easqy_Records::MANAGE_CAPABILITY);
+		}
+
+		wp_send_json_success(array(
+			'status' => 'ok', 'users' => $result
+		));
+	}
+
+	public function user_add() {
+		self::check_nonce();
+
+		if (!isset($_POST['userId'])){
+			wp_send_json_error( 'no user id' );
+			return;
+		}
+
+		$userId= intval($_POST['userId']);
+		if ($userId <= 0 ){
+			wp_send_json_error( 'no user id' );
+			return;
+		}
+
+		$u = get_user_by('id', $userId);
+		if (!$u) {
+			wp_send_json_error( 'no user with this id ('.$userId.')' );
+			return;
+		}
+
+		$u->add_cap(Easqy_Records::MANAGE_CAPABILITY);
+
+		wp_send_json_success(array(
+			'status' => 'ok'
+		));
+	}
+
+	public function user_remove() {
+		self::check_nonce();
+
+		if (!isset($_POST['userId'])){
+			wp_send_json_error( 'no user id' );
+			wp_die();
+		}
+
+		$userId= intval($_POST['userId']);
+		if ($userId <= 0 ){
+			wp_send_json_error( 'no user id' );
+			wp_die();
+		}
+
+		$u = get_user_by('id', $userId);
+		if (!$u) {
+			wp_send_json_error( 'no user with this id ('.$userId.')' );
+			wp_die();
+		}
+
+		if ($u->ID === get_current_user_id() )
+		{
+			wp_send_json_error( "can't remove me ($userId)" );
+			wp_die();
+		}
+
+		$u->remove_cap(Easqy_Records::MANAGE_CAPABILITY);
+
+		wp_send_json_success(array(
+			'status' => 'ok'
+		));
+		wp_die();
+	}
 
 }

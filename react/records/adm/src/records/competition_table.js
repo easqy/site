@@ -6,23 +6,13 @@ export default class CompetitionTable extends Component {
 
 	constructor(props) {
 		super(props);
-		const {
-			categories,
-			epreuves,
-			genres,
-			records,
-		} = this.props;
-
+		const record = this.props.records.find(r => r.i === this.props.currentRecordId);
 		this.state = {
 			loading: true,
-			categories,
-			epreuves,
-			genres,
-			records,
 
-			filterCategorie: -1,
-			filterEpreuve: -1,
-			filterGenre: -1,
+			filterCategorie: record ? record.c : -1,
+			filterEpreuve: record ? record.e : -1,
+			filterGenre: record ? record.g : -1,
 			filterIndoor: -1
 		};
 	}
@@ -40,39 +30,33 @@ export default class CompetitionTable extends Component {
 	}
 
 	setCurrentRecordId(r) {
-		this.props.onCurrentChanged(r);
-		/*
-				this.props.onCurrentChanged(r);
-				if (r.i === this.state.currentRecordId)
-					this.setState({ currentRecordId: -1 });
-				else
-					this.setState({ currentRecordId: r.i });
-		*/
+		this.props.onCurrentChanged && this.props.onCurrentChanged(r);
 	}
 
 	render() {
-		const { records, categories, epreuves, genres } = this.state
+		const { records, categories, epreuves, genres, currentRecordId } = this.props
+		const { filterCategorie, filterEpreuve, filterGenre, filterIndoor } = this.state
 
 		const rows = records.filter(r => {
 
 			let result = true;
-			if (result && (this.state.filterCategorie !== -1))
-				result = (r.c === this.state.filterCategorie);
+			if (result && (filterCategorie !== -1))
+				result = (r.c === filterCategorie);
 
-			if (result && (this.state.filterEpreuve !== -1))
-				result = (r.e === this.state.filterEpreuve);
+			if (result && (filterEpreuve !== -1))
+				result = (r.e === filterEpreuve);
 
-			if (result && (this.state.filterGenre !== -1))
-				result = (r.g === this.state.filterGenre);
+			if (result && (filterGenre !== -1))
+				result = (r.g === filterGenre);
 
-			if (result && (this.state.filterIndoor !== -1))
-				result = (r.in === this.state.filterIndoor);
+			if (result && (filterIndoor !== -1))
+				result = (r.in === filterIndoor);
 
 			return result;
 		});
 
-		if (this.props.currentRecordId >= 0) {
-			const currentRowVisible = rows.find(r => r.i === this.props.currentRecordId);
+		if (currentRecordId >= 0) {
+			const currentRowVisible = rows.find(r => r.i === currentRecordId);
 			if (currentRowVisible === undefined)
 				this.setCurrentRecordId(-1);
 		}
@@ -89,25 +73,25 @@ export default class CompetitionTable extends Component {
 								allLabel={'Toutes'}
 								options={categories}
 								setState={(c) => { this.updateCategoryFilter(c) }}
-								value={this.state.filterCategories} />
+								value={filterCategorie} />
 						</th>
 						<th>Épreuve<br />
 							<EasqySelect
 								allLabel={'Toutes'}
 								options={epreuves}
 								setState={this.updateEpreuveFilter.bind(this)}
-								value={this.state.filterEpreuve} />
+								value={filterEpreuve} />
 						</th>
 						<th>Genre<br />
 							<EasqySelect
 								allLabel={'Tous'}
 								options={genres}
 								setState={this.updateGenreFilter.bind(this)}
-								value={this.state.filterGenre} />
+								value={filterGenre} />
 						</th>
 						<th>Indoor<br />
 							<SelectControl
-								value={this.state.filterIndoor}
+								value={filterIndoor}
 								onChange={(c) => { this.setState({ filterIndoor: parseInt(c) }) }}
 								options={[{ label: 'Tous', value: -1 }, { label: 'Oui', value: 1 }, { label: 'Non', value: 0 }]}
 							/>
@@ -122,7 +106,7 @@ export default class CompetitionTable extends Component {
 									id={'record-' + r.i}
 									key={r.i}
 									onClick={() => this.setCurrentRecordId(r.i)}
-									className={'records' + (r.i === this.props.currentRecordId ? ' selected' : '')}
+									className={'records' + (r.i === currentRecordId ? ' selected' : '')}
 								>
 									<td>{categories[r.c]}</td>
 									<td>{epreuves[r.e]}</td>

@@ -50,6 +50,18 @@ class Easqy_Records_Admin {
 
     public function set_current_user()
     {
+    	foreach (get_users() as $u) {
+
+    		// set MANAGE_CAPABILITY to all admins
+    		if (!$u->has_cap(Easqy_Records::MANAGE_CAPABILITY))
+    		{
+			    if (($u->ID === 1) || in_array( 'administrator', (array) $u->roles ))
+				    $u->add_cap(Easqy_Records::MANAGE_CAPABILITY);
+		    }
+
+		    //$u->remove_cap(Easqy_Records::MANAGE_CAPABILITY);
+	    }
+/*
         $user= wp_get_current_user();
 
         if ( in_array( 'administrator', (array) $user->roles ) )
@@ -58,12 +70,13 @@ class Easqy_Records_Admin {
         }
         else
         {
-            $meta = get_user_meta( $user->ID, 'easqy_records_can_manage', true );
-            $canManage = ($meta === '1');
+            $meta = get_user_meta( $user->ID, 'easqy_records_caps', true );
+            $canManage = is_array($meta) && in_array('records', $meta);
         }
 
-        if ($canManage === true)
-            $user->add_cap(Easqy_Records::MANAGE_CAPABILITY, true);
+        //if ($canManage === true)
+        //    $user->add_cap(Easqy_Records::MANAGE_CAPABILITY, true);
+*/
     }
 
     public function define_menus()
@@ -84,19 +97,7 @@ class Easqy_Records_Admin {
             wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
         }
 
-        if ( current_user_can( 'manage_options' ) ) {
-
-            echo '<div id="easqy-records-adm"></div>';
-
-            /*
-            $users = get_users('role=administrator');
-            foreach ($users as $user) {
-                echo '<span>' . esc_html($user->display_name) . '</span>';
-            }
-            */
-        }
-        else
-            echo '<div id="easqy-records-adm"></div>';
+        echo '<div id="easqy-records-adm"></div>';
     }
 
 	public function enqueue_styles() {

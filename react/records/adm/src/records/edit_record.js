@@ -177,8 +177,6 @@ class AthleteDuRecord extends Component {
 	}
 }
 
-
-
 export default class EditRecord extends Component {
 
 	constructor(props) {
