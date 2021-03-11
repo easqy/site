@@ -1,6 +1,6 @@
 <?php
-#define('EASQY_ENVIRONMENT_PROD', '1');
-define('EASQY_ENVIRONMENT_DEV', '1');
+#define('EASQY_THEME_ENVIRONMENT_PROD', '1');
+define('EASQY_THEME_ENVIRONMENT_DEV', '1');
 
 
 add_filter( 'widget_text', 'do_shortcode' );
@@ -102,26 +102,17 @@ if (defined('EASQY_0'))
     add_action( 'save_post', 'easqy_theme_save_meta_box_data', 10, 3 );
 }
 
-if (defined('EASQY_ENVIRONMENT_PROD'))
+if (defined('EASQY_THEME_ENVIRONMENT_PROD'))
 {
     function easqy_theme_header_metadata() {
 
-        // Post object if needed
-        // global $post;
-
-        // Page conditional if needed
-        // if( is_page() ){}
-
         ?>
-
         <script type="text/javascript">
             if (location.protocol !== 'https:') {
                 location.replace(`https:${location.href.substring(location.protocol.length)}`);
             }
         </script>
-
         <?php
-
     }
     add_action( 'wp_head', 'easqy_theme_header_metadata' );
 }

@@ -33,7 +33,6 @@ class DeleteButton extends Component {
 	}
 }
 
-
 export default class CurrentRecord extends Component {
 
 	constructor(props) {
@@ -51,9 +50,23 @@ export default class CurrentRecord extends Component {
 		} = this.props;
 
 		const key = record.i;
-		const l = ra.find(ra => ra.r === record.i);
+		const raFiltered = ra.filter(ra => ra.r === record.i);
 		const date = new Date(record.d)
-		const a = athletes.filter(a => (a.i === l.a))
+
+		const Athlete = ({ athleteId }) => {
+			const found = athletes.find(a => a.i === athleteId);
+
+			if (found) {
+				return <span>{found.p}&nbsp;{found.n}</span>
+			}
+			else
+				return <span></span>
+		}
+
+		const CatWhenPerf = ({ cat }) => {
+			if (cat) { return <span>&nbsp;({categories[cat]})</span> }
+			return <></>;
+		}
 
 		return (
 			<div key={key} id={'easqy-current-record'}>
@@ -63,10 +76,10 @@ export default class CurrentRecord extends Component {
 					<tr><td className='label'>Informations :</td><td className='value'>{record.f}</td></tr>
 					<tr><td className='label'>Lieu :</td><td className='value'>{record.l}</td></tr>
 					<tr><td className='label'>Athlete(s) :</td><td className='value'>
-						{a.map(a => {
+						{raFiltered.map(ra => {
 							return <div>
-								{a.p}&nbsp;{a.n}
-								{l.c && <span>&nbsp;({categories[l.c]})</span>}
+								<Athlete athleteId={ra.a} />
+								<CatWhenPerf cat={ra.c} />
 							</div>
 						})}
 					</td></tr>
@@ -74,11 +87,14 @@ export default class CurrentRecord extends Component {
 				)}
 				<div className='easqy-button-bar'>
 					<DeleteButton doDel={() => { if (this.props.doDel) this.props.doDel() }} />
-					<Button isPrimary>Modifier</Button>
-					{/*
-					<input type="submit" id="records-delete-submit" class="button-secondary is-destructive" value="Supprimer" />
-					<input type="submit" id="records-modify-submit" class="button-primary" value="Modifier" />
-					*/}
+					<Button
+						onClick={() => {
+							this.props.doModify && this.props.doModify(record)
+						}}
+						isPrimary
+					>
+						Modifier
+					</Button>
 				</div>
 			</div>
 		)

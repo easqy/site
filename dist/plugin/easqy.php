@@ -38,6 +38,10 @@ if ( ! defined( 'EASQY_URL' ) ) {
 	define( 'EASQY_URL', WP_PLUGIN_URL . '/' . EASQY_NAME );
 }
 
+#define('EASQY_ENVIRONMENT_PROD', '1');
+#define('EASQY_ENVIRONMENT_DEV', '1');
+
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-plugin-name-activator.php

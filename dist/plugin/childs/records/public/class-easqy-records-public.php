@@ -2,6 +2,8 @@
 
 class Easqy_Records_Public {
 
+    const SCRIP_STYLE_HANDLE = EASQY_NAME . '-records-pub';
+
 	public function __construct( ) {
 	}
 
@@ -13,21 +15,16 @@ class Easqy_Records_Public {
     }
 
 	public function enqueue_styles() {
-        $handle = EASQY_NAME . '-records-pub';
-        wp_enqueue_style(
-            $handle,
+        wp_register_style(
+            self::SCRIP_STYLE_HANDLE,
             plugins_url( 'js/index.css', __FILE__ ), ['wp-components']
         );
     }
 
 	public function enqueue_scripts() {
-        //error_log('Easqy_Records_Public::enqueue_scripts');
-        //error_log(plugins_url( 'js/index.js', __FILE__ ));
-        //error_log( print_r( $this->shortcodes, true ) );
         $script_asset = require( plugin_dir_path(__FILE__) . 'js/index.asset.php' );
-        $handle = EASQY_NAME . '-records-pub';
-        wp_enqueue_script(
-            $handle,
+        wp_register_script(
+	        self::SCRIP_STYLE_HANDLE,
             plugins_url( 'js/index.js', __FILE__ ),
             $script_asset['dependencies'],
             time(), true );
@@ -40,22 +37,8 @@ class Easqy_Records_Public {
             Initialisation ...
         </div>
         <?php
-        /*
-        $script_asset_path = 'js/index.asset.php';
-        $index_js= 'js/index.js';
-        $styles  = 'js/index.css';
-        $script_asset = require( $script_asset_path );
-
-        wp_enqueue_script(
-            'easqy-records',
-            plugins_url( $index_js, __FILE__ ),
-            $script_asset['dependencies'],
-            time(), true );
-        wp_enqueue_style(
-            'easqy-records',
-            plugins_url( $styles, __FILE__ )
-        );
-        */
+	    wp_enqueue_style(self::SCRIP_STYLE_HANDLE);
+	    wp_enqueue_script(self::SCRIP_STYLE_HANDLE);
         return ob_get_clean();
 
     }

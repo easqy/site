@@ -86,7 +86,7 @@ class Easqy_Records_Admin {
 
         if ( current_user_can( 'manage_options' ) ) {
 
-            echo '<div id="easqy-records-adm-users"></div>';
+            echo '<div id="easqy-records-adm"></div>';
 
             /*
             $users = get_users('role=administrator');
@@ -119,7 +119,8 @@ class Easqy_Records_Admin {
 
         $inlineCode = 'const easqy_records_adm=';
         $inlineCode.= json_encode( [
-            'ajaxurl' => admin_url( 'admin-ajax.php' )
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+	        'security'=> wp_create_nonce('record_admin_nonce')
         ] ) ;
         $inlineCode.= ';';
         wp_add_inline_script($handle, $inlineCode,'before');

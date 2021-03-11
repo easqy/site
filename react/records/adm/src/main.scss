@@ -3,6 +3,14 @@
 }
 
 #easqy-records-adm {
+	.admin-descriptif {
+		text-align: center;
+	}
+	.admin-descriptif-text {
+		font-size: 1.25em;
+		margin: 1em;
+	}
+
 	.wrapper {
 		display: flex;
 		flex-direction: row;
@@ -87,11 +95,11 @@
 	}
 }
 
-#easqy-add-record {
+#easqy-edit-record {
 	max-width: 600px;
 }
 
-#easqy-record-add-buttons {
+#easqy-record-edit-buttons {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;

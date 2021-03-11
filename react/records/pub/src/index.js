@@ -1,18 +1,13 @@
 import {
 	Component,
-	useState,
 	render
 } from '@wordpress/element';
-
 import {
 	SelectControl, Button, ButtonGroup
 } from '@wordpress/components';
-
-//import Wind from './wind.svg'
 import './main.scss';
 
 import $ from "jquery";
-
 
 var slug = function (str) {
 	str = str.replace(/^\s+|\s+$/g, ''); // trim
@@ -33,7 +28,6 @@ var slug = function (str) {
 };
 
 const slugEpreuveFamily = (e) => 'epreuve-' + slug(e);
-
 
 class Record extends Component {
 	constructor(props) {
@@ -70,7 +64,10 @@ class Record extends Component {
 
 		const rAthletes = () => ra.filter(a => a.r === record.i).map(ra => {
 			const at = athletes.find(a => a.i === ra.a);
-			return <div className={'nom'}>{at.p}&nbsp;{at.n}</div>
+			return <div className={'nom'}>
+				{at.p}&nbsp;{at.n}
+				{ra.c && (<span>({categories[ra.c]})</span>)}
+			</div>
 		});
 
 		return (
@@ -172,11 +169,47 @@ class EpreuveFamily extends Component {
 	}
 }
 
+class AthleteSelector extends Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			currentAthlete: this.props.currentAthlete
+		};
+	};
+	render() {
+
+		const oAthletes = this.props.athletes.map(a => {
+			return { value: a.i, label: a.p + ' ' + a.n }
+		});
+
+		oAthletes.sort((o1, o2) => (o1.label > o2.label) ? 1 : -1);
+
+		const props = {
+			disabled: false,
+			label: 'Athlètes',
+			labelPosition: 'side',
+			multiple: false,
+			options: [{
+				value: -1, label: ' - Tous les athletes -'
+			}, ...oAthletes],
+			size: 'default',
+		};
+
+		return <SelectControl
+			{...props}
+			value={this.state.currentAthlete}
+			onChange={(a) => { this.props.onChange(a); this.setState({ currentAthlete: a }) }}
+		/>
+	}
+}
+
 class Records extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			loading: true,
+			currentAthlete: -1,
 			indoor: 0,
 			genre: -1,
 			famille: -1
@@ -187,7 +220,7 @@ class Records extends Component {
 		const me = this;
 		$.ajax({
 			url: easqy.ajaxurl,
-			method: "POST",
+			method: "GET",
 			data: {
 				action: "easqy_records",
 			},
@@ -234,41 +267,77 @@ class Records extends Component {
 		} = this.datas;
 
 		const { indoor, genre } = this.state;
+		const raFiltered = (this.state.currentAthlete === -1) ? ra : ra.filter(ra => ra.a === this.state.currentAthlete);
+		const athleteRecords = records.filter(r => {
+			return raFiltered.findIndex(ra => ra.r === r.i) >= 0
+		});
 
-		const frecords = records.filter(r => (r.in === indoor) && (r.g === genre));
+		const availableGenres = [];
+		athleteRecords.forEach(r => {
+			if (availableGenres.indexOf(r.g) < 0)
+				availableGenres.push(r.g);
+		});
+		if (availableGenres.indexOf(this.state.genre) < 0) {
+			this.setState({ genre: availableGenres[0] })
+			return <></>
+		}
 
 		const availableFamilies = [];
-		records.forEach(r => {
+		athleteRecords.forEach(r => {
 			if (availableFamilies.indexOf(r.fa) < 0)
 				availableFamilies.push(r.fa);
 		});
+		if (availableFamilies.indexOf(this.state.famille) < 0) {
+			this.setState({ famille: availableFamilies[0] })
+			return <></>
+		}
 
-		const EpreuveFamilyQuicAccess = () => {
+		const availableIndoor = [];
+		athleteRecords.forEach(r => {
+			if (availableIndoor.indexOf(r.in) < 0)
+				availableIndoor.push(r.in);
+		});
+
+		const filteredRecords = athleteRecords.filter(r => (r.in === indoor) && (r.g === genre));
+
+		const Filters = () => {
 			return (
 				<>
-					<ButtonGroup>
-						<Button
-							isPressed={indoor === 1}
-							onClick={() => { this.setState({ indoor: 1 }) }}
-						>Indoor</Button>
-						<Button
-							isPressed={indoor === 0}
-							onClick={() => { this.setState({ indoor: 0 }) }}
-						>Outdoor</Button>
+					<AthleteSelector
+						key={this.state.currentAthlete}
+						athletes={athletes}
+						currentAthlete={this.state.currentAthlete}
+						onChange={(a) => { this.setState({ currentAthlete: parseInt(a) }) }}
+					/>
 
-						<span>&nbsp;|&nbsp;</span>
-						{
-							this.availableGenres.map(g =>
+					<div style={{ display: 'flex', justifyContent: 'center' }}>
+						{(availableIndoor.length > 1) && (
+							<ButtonGroup>
 								<Button
-									isPressed={g === genre}
-									onClick={() => { this.setState({ genre: g }) }}
-								>{genres[g]}</Button>
-							)
+									isPressed={indoor === 1}
+									onClick={() => { this.setState({ indoor: 1 }) }}
+								>Indoor</Button>
+								<Button
+									isPressed={indoor === 0}
+									onClick={() => { this.setState({ indoor: 0 }) }}
+								>Outdoor</Button>
+							</ButtonGroup>)
 						}
-					</ButtonGroup>
+
+						{(availableGenres.length > 1) && (
+							<ButtonGroup>
+								{availableGenres.map(g =>
+									<Button
+										isPressed={g === genre}
+										onClick={() => { this.setState({ genre: g }) }}
+									>{genres[g]}</Button>
+								)}
+							</ButtonGroup>
+						)}
+					</div>
 					<div>&nbsp;</div>
-					<ButtonGroup>
-						{
+					<ButtonGroup style={{ display: 'flex', justifyContent: 'center' }}>
+						{(availableFamilies.length > 1) &&
 							availableFamilies.map(f => {
 								return <Button key={f} href={'#' + slugEpreuveFamily(familles[f])}>{familles[f]}</Button>
 							})
@@ -279,14 +348,13 @@ class Records extends Component {
 		};
 
 		return <div className={'records'}>
-			<h2>Les records du club</h2>
-			<EpreuveFamilyQuicAccess />
+			<Filters />
 			{
 				availableFamilies.map(famille => {
 					return <EpreuveFamily
 						key={famille}
 						nom={familles[famille]}
-						records={frecords.filter(r => r.fa === famille)}
+						records={filteredRecords.filter(rec => rec.fa === famille)}
 						categories={categories}
 						epreuves={epreuves}
 						athletes={athletes}
@@ -298,8 +366,8 @@ class Records extends Component {
 	}
 }
 
-// Render the app inside our shortcode's #app div
-render(
-	<Records />,
-	document.getElementById('easqy-records')
-);
+(function () {
+	const elt = document.getElementById('easqy-records');
+	if (elt)
+		render(<Records />, elt);
+})();

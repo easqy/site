@@ -75,7 +75,10 @@ export default class CompetitionRecords extends Component {
 								athletes={athletes}
 								categories={categories}
 								ra={ra}
-								doDel={() => { if (this.props.doDelRecord) this.props.doDelRecord(record.i) }}
+								doDel={() => { this.props.doDelRecord && this.props.doDelRecord(record.i) }}
+								doModify={() => {
+									this.props.doModifyRecord && this.props.doModifyRecord(record)
+								}}
 							/>
 						}
 					</div>

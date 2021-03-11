@@ -1,6 +1,6 @@
 import { Component } from '@wordpress/element';
 import { SelectControl } from '@wordpress/components';
-import { EasqySelect } from './utils';
+import { EasqySelect } from '../utils';
 
 export default class CompetitionTable extends Component {
 

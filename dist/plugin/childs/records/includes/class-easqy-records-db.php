@@ -6,6 +6,17 @@ class Easqy_Records_DB
     private static function tableRecord($wpdb) { return  $wpdb->prefix . 'easqy_records_record'; }
     private static function tableAthlete($wpdb) { return  $wpdb->prefix . 'easqy_records_athlete'; }
     private static function tableRecordHasAthletes($wpdb) { return  $wpdb->prefix . 'easqy_records_record_has_athlete'; }
+	private static function noquote($str) : string
+	{
+		$res= str_replace('\"', '"', $str);
+		return str_replace("\'", "'", $res);
+	}
+	private static function noquoteAndTime($str) : string {
+    	$res = self::noquote($str);
+		//$res= str_replace('"', '&Prime;', $str);
+		return str_replace("''", '"', $res);
+	}
+
 
     public static function activate() {
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -72,10 +83,80 @@ class Easqy_Records_DB
 
     public static function deleteRecord($recordId) {
         global $wpdb;
-        $res1 = $wpdb::delete( tableRecord($wpdb), array( ‘id’ => intval( $recordId ),  array( "%d" ) ));
-        $res2 = $wpdb::delete( tableRecordHasAthletes($wpdb), array( ‘record’ => intval( $recordId ),  array( "%d" ) ));
+
+        $res1 = $wpdb->delete( self::tableRecord($wpdb), array( 'id' => intval( $recordId )), array('%d') );
+        $res2 = $wpdb->delete( self::tableRecordHasAthletes($wpdb), array( 'record' => intval( $recordId )), array('%d') );
+
         //purge athletes ??
         return ($res1 !== false) && ($res2 !== false);
     }
+
+	public static function saveRecord( $record ) : bool {
+    	global $wpdb;
+
+		$date = sprintf('%04d-%02d-%02d',
+			intval($record['date']['y']),
+			intval($record['date']['m'])+1,intval($record['date']['d'])
+		);
+
+		$r = array(
+			'categorie'=> intval( $record['categorie'] ),
+			'epreuve'=> intval( $record['epreuve'] ),
+			'indoor'=> intval( $record['io'] ),
+			'genre'=> intval( $record['genre'] ),
+			'date'=> $date,
+			'lieu'=> self::noquote($record['lieu']),
+			'performance'=> self::noquoteAndTime($record['perf']),
+			'infos'=> self::noquote($record['infos'])
+		);
+
+		if ( intval($record['id'] >= 0) )
+		{
+			$result = $wpdb->update( self::tableRecord( $wpdb ), $r, array( 'id' => intval( $record['id'] ) ) );
+			if ( $result === false )
+				return false;
+
+		} else {
+			$result= $wpdb->insert( self::tableRecord($wpdb), $r);
+			if ( $result === false )
+				return false;
+
+			$record['id'] = $wpdb->insert_id;
+		}
+
+		// 1. delete ras
+		$wpdb->delete( self::tableRecordHasAthletes($wpdb), array('record' => $record['id']) );
+
+		// 2. eventually create athletes and add ra
+
+		$athletes = $record['athletesDuRecord'];
+		foreach ($athletes as $athlete) {
+			$ra=array('record' => intval($record['id']));
+			if (intval( $athlete['catWhenPerf']) < 0)
+				$ra['categorie'] = null;
+			else
+				$ra['categorie'] = intval( $athlete['catWhenPerf']);
+
+			if (intval($athlete['athlete']) > 0) {
+				$ra['athlete'] = intval( $athlete['athlete'] );
+			} else {
+				// create athlete
+				$parts = explode(' ', $athlete['athlete'], 2);
+				if (is_array($parts) && (count($parts)>0))
+				{
+					$a= array(
+						'nom' => $parts[0],
+						'prenom' => count($parts) > 1 ? $parts[1] : ''
+					);
+					$result= $wpdb->insert( self::tableAthlete($wpdb), $a);
+					$ra['athlete'] = $wpdb->insert_id;
+				}
+			}
+			$result= $wpdb->insert( self::tableRecordHasAthletes($wpdb), $ra);
+
+		}
+		return true;
+
+	}
 
 }

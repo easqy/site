@@ -2,7 +2,8 @@
 import { Component, render } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 
-import Records from './records';
+import Records from './records/records';
+import Users from './users/users';
 import './main.scss';
 
 const ViewType = {
@@ -13,15 +14,37 @@ const ViewType = {
 Object.freeze(ViewType);
 
 
-class RecordsAdminUsers extends Component {
+class AdminView extends Component {
 	render() {
-		return <div className="wrap">
-			<h1 class="wp-heading-inline">Records</h1>
-			TODO
+		const {
+			onViewChange
+		} = this.props;
+
+		return <>
+			<h1 class="wp-heading-inline">Records - Administration</h1>
+			<div className="easqy-button-bar">
+				<div className={'admin-descriptif'}>
+					<div className={'admin-descriptif-text'}>
+						Donner ou retirer les droits d'édition des records aux membres
+					</div>
+					<Button
+						isSecondary
+						onClick={() => { onViewChange(ViewType.users) }}
+					>Gérer les utilisateurs</Button>
+				</div>
+				<div className={'admin-descriptif'}>
+					<div className={'admin-descriptif-text'}>
+						Ajouter, modifier ou supprimer les records visibles sur <a href="/competitions/les-records-du-club/">la page des records du club</a>
+					</div>
+					<Button
+						isSecondary
+						onClick={() => { onViewChange(ViewType.records) }}
+					>Gérer les records</Button>
+				</div>
 			</div>
+		</>
 	}
 }
-
 
 class RecordsAdministration extends Component {
 
@@ -32,32 +55,19 @@ class RecordsAdministration extends Component {
 		}
 	}
 
-
 	render() {
 		const Content = () => {
 
 			switch (this.state.viewType) {
 
 				case ViewType.admin:
-					return <div className="wrap">
-						<h1 class="wp-heading-inline">Records</h1>
-						<div className="easqy-button-bar">
-							<Button
-								isSecondary
-								onClick={() => { this.setState({ viewType: ViewType.users }) }}
-							>Gerer les utilisateurs</Button>
-							<Button
-								isSecondary
-								onClick={() => { this.setState({ viewType: ViewType.records }) }}
-							>Gerer les records</Button>
-						</div>
-					</div>
+					return <AdminView onViewChange={(v) => { this.setState({ viewType: v }) }} />
 
 				case ViewType.records:
 					return <Records />
 
 				case ViewType.users:
-					return <RecordsAdminUsers />
+					return <Users />
 
 				default:
 					return null;
@@ -72,12 +82,13 @@ class RecordsAdministration extends Component {
 
 
 (function () {
-	const eltUsers = document.getElementById('easqy-records-adm-users');
+	const eltUsers = document.getElementById('easqy-records-adm');
 	if (eltUsers)
 		render(<RecordsAdministration />, eltUsers);
-
+	/*
 	const elt = document.getElementById('easqy-records-adm');
 	if (elt)
 		render(<Records />, elt);
+	*/
 })();
 

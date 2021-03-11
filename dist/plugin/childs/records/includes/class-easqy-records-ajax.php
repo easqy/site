@@ -8,6 +8,21 @@ class Easqy_Records_Ajax
         $loader->add_action('wp_ajax_easqy_records', $this, 'get_records' );
         $loader->add_action('wp_ajax_nopriv_easqy_records', $this, 'get_records' );
         $loader->add_action('wp_ajax_easqy_record_del', $this, 'del_record');
+	    $loader->add_action('wp_ajax_easqy_record_save', $this, 'save_record');
+    }
+
+    static private function check_nonce(){
+	    if ( ! check_ajax_referer( 'record_admin_nonce', 'security', false ) ) {
+
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+	    }
+	}
+
+    public function get_adm_records() {
+
+		self::check_nonce();
+	    return $this->get_records();
     }
 
     public function get_records() {
@@ -57,6 +72,9 @@ class Easqy_Records_Ajax
     }
 
     public function del_record() {
+
+	    self::check_nonce();
+
         if (!isset($_POST['recordId']))
         {
             wp_send_json_error( array('status' => 'error', 'message' => 'no record id') );
@@ -71,5 +89,27 @@ class Easqy_Records_Ajax
         );
         wp_send_json_success($result);
     }
+
+	public function save_record() {
+		self::check_nonce();
+		if (!isset($_POST['record']))
+		{
+			wp_send_json_error( array('status' => 'error', 'message' => 'no record') );
+			return;
+		}
+		if (!is_array($_POST['record']))
+		{
+			wp_send_json_error( array('status' => 'error', 'message' => 'no record') );
+			return;
+		}
+
+		Easqy_Records_DB::saveRecord($_POST['record']);
+
+		$result = array(
+			'status' => 'ok, saved'
+		);
+		wp_send_json_success($result);
+	}
+
 
 }

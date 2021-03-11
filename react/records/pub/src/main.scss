@@ -96,14 +96,21 @@
 							font-size: 1.25em;
 							font-weight: bold;
 							white-space: nowrap;
+
+							span {
+								font-size: 0.75em;
+								padding-left: 0.5em;
+							}
 						}
 						.perf {
 							font-size: 1.25em;
-							font-weight: 200;
+							font-weight: bold;
 
 							.delta {
+								/*
 								background-image: url(./wind.svg);
 								background-repeat: no-repeat;
+								*/
 								margin-left: 1em;
 								padding-left: 1.5em;
 								font-size: 0.75em;

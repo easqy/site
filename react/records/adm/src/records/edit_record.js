@@ -1,6 +1,6 @@
 import { Component } from '@wordpress/element';
 import { Button, TextControl, Modal, ComboboxControl, DateTimePicker, Popover, SelectControl } from '@wordpress/components';
-import { EasqySelect } from './utils';
+import { EasqySelect } from '../utils';
 
 
 class DateBlock extends Component {
@@ -17,7 +17,6 @@ class DateBlock extends Component {
 		return <div className="components-dropdown">
 			<label for='easqy-add-record-date'>Date du record : </label>
 			<Button id='easqy-add-record-date' isLink={true} onClick={() => {
-				console.log(this.state)
 				this.setState({ openDatePopup: true })
 
 			}}>
@@ -28,7 +27,7 @@ class DateBlock extends Component {
 					<DateTimePicker
 						label="My Date/Time Picker"
 						currentDate={this.state.date}
-						onChange={(d) => { console.log(d, typeof d); this.setState({ date: new Date(d) }) }}
+						onChange={(d) => { this.setState({ date: new Date(d) }) }}
 						is12Hour={false}
 					/>
 				</Popover>
@@ -60,7 +59,16 @@ class AthleteModal extends Component {
 			athletes, onAddAthlete
 		} = this.props;
 
-		const athleteOptions = athletes.map(a => { return { label: a.p + ' ' + a.n, value: a.i } })
+
+		const athleteLabel = (a) => (a.p + ' ' + a.n);
+		const athleteOptions = athletes.map(a => { return { label: athleteLabel(a), value: a.i } }).sort((a, b) => (a.label > b.label) ? 1 : -1);
+
+		const AthleteLibelle = () => {
+			const a = athletes.find(a => a.i === athleteId);
+			return athleteLabel(a);
+		}
+
+		const duplicate = (newAthlete.length > 0) && (athletes.find(a => athleteLabel(a) === newAthlete));
 
 		return <div>
 			<Button
@@ -77,7 +85,7 @@ class AthleteModal extends Component {
 				>
 					<div>
 						<ComboboxControl
-							label="Athlete"
+							label=""
 							value={athleteId}
 							onFilterValueChange={(v) => { this.setState({ newAthlete: v.trim() }) }}
 							onChange={(a) => { this.setState({ athleteId: a }) }}
@@ -85,22 +93,37 @@ class AthleteModal extends Component {
 						/>
 					</div>
 
-					<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-						<Button
+					<div className={'easqy-button-bar'}>
+						<Button style={{ marginLeft: '1em', margingRight: '1em' }}
 							isSecondary
 							onClick={() => { this.setState({ modalIsOpen: false }) }}
 						>
 							{'Annuler'}
 						</Button>
-						<Button
-							isPrimary
-							onClick={() => {
-								onAddAthlete((newAthlete === '') ? athleteId : newAthlete);
-								this.setState({ modalIsOpen: false })
-							}}
-						>
-							{'Ajouter'}
-						</Button>
+						{(newAthlete.length > 0) && (!duplicate) && (
+							<Button style={{ marginLeft: '1em', margingRight: '1em' }}
+								key={newAthlete}
+								isPrimary
+								onClick={() => {
+									onAddAthlete(newAthlete);
+									this.setState({ modalIsOpen: false, athleteId: -1, newAthlete: '' })
+								}}
+							>
+								{newAthlete}
+							</Button>
+						)}
+						{(athleteId > 0) && (
+							<Button style={{ marginLeft: '1em', margingRight: '1em' }}
+								key={athleteId}
+								isPrimary
+								onClick={() => {
+									onAddAthlete(athleteId);
+									this.setState({ modalIsOpen: false, athleteId: -1, newAthlete: '' })
+								}}
+							>
+								<AthleteLibelle />
+							</Button>
+						)}
 					</div>
 				</Modal>)
 			}
@@ -167,14 +190,16 @@ export default class EditRecord extends Component {
 			adr = ra.map(ra => { return { athlete: ra.a, catWhenPerf: ra.c || -1 } });
 		}
 
+		//for (var i = 0; i < this.props.record.p.length; i++) console.log(i, this.props.record.p.charAt(i));
 
 		this.state = {
+			id: (this.props.record && this.props.record.i) || -1,
 			categorie: (this.props.record && this.props.record.c) || 0,
 			epreuve: (this.props.record && this.props.record.e) || 0,
 			genre: (this.props.record && this.props.record.g) || 0,
 			io: (this.props.record && this.props.record.in) || 0,
 			perf: (this.props.record && this.props.record.p) || '',
-			infos: (this.props.record && this.props.record.i) || '',
+			infos: (this.props.record && this.props.record.f) || '',
 			lieu: (this.props.record && this.props.record.l) || '',
 			date: (this.props.record && new Date(this.props.record.d)) || new Date(),
 
@@ -183,6 +208,11 @@ export default class EditRecord extends Component {
 	}
 
 	onAddAthlete(a) {
+		// a is either an int (athletId) or a string => new athlete
+
+		if (this.state.athletesDuRecord.find(athlete => (athlete.athlete === a)))
+			return;
+
 		this.setState({
 			athletesDuRecord: [...this.state.athletesDuRecord, { athlete: a, catWhenPerf: -1 }]
 		})
@@ -214,17 +244,20 @@ export default class EditRecord extends Component {
 		} = this.props;
 		const { categorie, epreuve, genre, io, athletesDuRecord } = this.state;
 
-		const recordFound = records.find(r =>
+		const recordFound = () => records.find(r =>
 			(r.c === categorie) && (r.e === epreuve) && (r.g === genre) && (r.in === io)
 		);
 
-		const disableOk = (recordFound) || (this.state.perf === '') || (this.state.lieu === '') || (athletesDuRecord.length === 0);
+		const disableOk = (createMode && recordFound()) || (this.state.perf === '') || (this.state.lieu === '') || (athletesDuRecord.length === 0);
 
 		return (
-			<div>
-				{createMode && <h2>Ajouter un nouveau record</h2>}
+			<div id="easqy-edit-record">
+				<h2>
+					{createMode && 'Ajouter un nouveau record'}
+					{(!createMode) && 'Modifier ce record'}
+				</h2>
 				<div>
-					{createMode && <table>
+					<table>
 						<tr>
 							<td>
 								<EasqySelect
@@ -260,7 +293,6 @@ export default class EditRecord extends Component {
 							</td>
 						</tr>
 					</table>
-					}
 					<hr />
 					<DateBlock date={this.state.date} />
 					<hr />
@@ -270,14 +302,14 @@ export default class EditRecord extends Component {
 							label="Preformance :"
 							value={this.state.perf}
 							labelPosition='side'
-							onChange={(c) => { console.log(c); this.setState({ perf: c }) }}
+							onChange={(c) => { this.setState({ perf: c }) }}
 						/>
 						<div>&nbsp;</div>
 						<TextControl
 							label="Information complémentaire :"
 							help={'Vitesse du vent, poids, ...'}
 							value={this.state.infos}
-							onChange={(c) => { console.log(c); this.setState({ infos: c }) }}
+							onChange={(c) => { this.setState({ infos: c }) }}
 						/>
 					</div>
 					<hr />
@@ -285,7 +317,7 @@ export default class EditRecord extends Component {
 						label="Lieu :"
 						value={this.state.lieu}
 						labelPosition='side'
-						onChange={(c) => { console.log(c); this.setState({ lieu: c }) }}
+						onChange={(c) => { this.setState({ lieu: c }) }}
 					/>
 					<hr />
 					<h3>Athletes :</h3>
@@ -312,23 +344,21 @@ export default class EditRecord extends Component {
 						onAddAthlete={(a) => { this.onAddAthlete(a) }}
 					/>
 					<hr />
-					<div>
-						<div id="easqy-record-add-buttons">
-							<Button
-								type="button"
-								id="records-add-submit"
-								className="button-secondary"
-								value="Annuler"
-								onClick={() => this.props.onCancel()}
-							>Annuler</Button>
-							<Button
-								id="records-back-submit"
-								className="button-primary"
-								value="Enregistrer"
-								disabled={disableOk}
-								onClick={() => { console.log(this.state) }}
-							>Enregistrer</Button>
-						</div>
+					<div id="easqy-record-edit-buttons">
+						<Button
+							type="button"
+							id="records-edit-submit"
+							className="button-secondary"
+							value="Annuler"
+							onClick={() => this.props.onCancel()}
+						>Annuler</Button>
+						<Button
+							id="records-back-submit"
+							className="button-primary"
+							value="Enregistrer"
+							disabled={disableOk}
+							onClick={() => { this.props.onSave({ ...this.state }) }}
+						>Enregistrer</Button>
 					</div>
 				</div>
 			</div>
