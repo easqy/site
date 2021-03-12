@@ -1,0 +1,10 @@
+.easqy-effectifs-container {
+	min-height: 365px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.easqy-effectifs {
+	max-width: 800px;
+}

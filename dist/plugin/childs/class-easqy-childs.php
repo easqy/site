@@ -14,6 +14,7 @@ class Easqy_Childs
 
         new Easqy_Records($easqy);
         new Easqy_Latest_Results($easqy);
+        new Easqy_Effectifs($easqy);
     }
 
 
@@ -21,6 +22,7 @@ class Easqy_Childs
         $dir = dirname(__FILE__);
         require_once $dir . '/records/class-easqy-records.php';
         require_once $dir . '/latest_results/class-easqy-latest-results.php';
+	    require_once $dir . '/effectifs/class-easqy-effectifs.php';
     }
 
     private function define_admin_hooks() {

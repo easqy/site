@@ -4,7 +4,7 @@ class Easqy_Records_Common
 {
     const GENRES = array( 'Femme', 'Homme', 'Mixte' );
     const CATEGORIES = array( 'Mixte', 'Masters','Séniors','Espoirs','Juniors','Cadets','Minimes','Benjamins');
-    const EPREUVE_FAMILIES = array('Sprint','Demi Fond','Hors Stade','Haies','Sauts','Lancés','Épreuves Combinées',
+    const EPREUVE_FAMILIES = array('Sprint','Demi Fond','Hors Stade','Haies','Sauts','Lancers','Épreuves Combinées',
         'Relais','Marche');
 
     const EPREUVES = array(
