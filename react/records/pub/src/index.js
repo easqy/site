@@ -9,7 +9,13 @@ import './main.scss';
 
 import $ from "jquery";
 
-var slug = function (str) {
+const slug = function (str) {
+
+	if (!str) {
+		console.error('str is not defined', str);
+		return "-";
+	}
+
 	str = str.replace(/^\s+|\s+$/g, ''); // trim
 	str = str.toLowerCase();
 
@@ -73,11 +79,13 @@ class Record extends Component {
 		return (
 			<div className={classComp}>
 				<div className={'inner'}>
-					<div className={'categorie'}>
-						{categories[record.c]}
-						{ /* record[iCAT_WHEN_PERF] ? ' (' + record[iCAT_WHEN_PERF] + ' )' : '' */}
-					</div>
-					{rAthletes()}
+					{(!this.props.hideCategorie) &&
+						<div className={'categorie'}>
+							{categories[record.c]}
+							{ /* record[iCAT_WHEN_PERF] ? ' (' + record[iCAT_WHEN_PERF] + ' )' : '' */}
+						</div>
+					}
+					<div className={'athletes'}>{rAthletes()}</div>
 					<div className={'perf'}>{record.p}<Delta /></div>
 					<div className={'date'}>{recordDate()}</div>
 					<div className={'lieu'}>{record.l}</div>
@@ -204,6 +212,96 @@ class AthleteSelector extends Component {
 	}
 }
 
+class FilterIndoor extends Component {
+	constructor(props) {
+		super(props);
+	};
+
+	render() {
+
+		const { indoor } = this.props;
+
+
+		return <ButtonGroup>
+			<Button
+				isPressed={indoor === 1}
+				onClick={() => { this.props.onChange(1) }}
+			>Indoor</Button>
+			<Button
+				isPressed={indoor === 0}
+				onClick={() => { this.props.onChange(0) }}
+			>Outdoor</Button>
+		</ButtonGroup>
+	}
+}
+
+class FilterGenres extends Component {
+	constructor(props) {
+		super(props);
+	};
+
+	render() {
+
+		const { availableGenres, genre, genres } = this.props;
+
+
+		return <ButtonGroup>
+			{availableGenres.map(g =>
+				<Button
+					isPressed={g === genre}
+					onClick={() => { this.props.onChange(g) }}
+				>{genres[g]}</Button>
+			)}
+		</ButtonGroup>
+	}
+}
+
+class FilterIOAndGenres extends Component {
+	constructor(props) {
+		super(props);
+	};
+
+	render() {
+
+		const { athleteRecords, genre, indoor, genres } = this.props;
+
+		const availableGenres = [];
+		athleteRecords.forEach(r => {
+			if (availableGenres.indexOf(r.g) < 0)
+				availableGenres.push(r.g);
+		});
+		if (availableGenres.indexOf(genre) < 0) {
+			this.props.onChange({ genre: availableGenres[0] })
+			return <></>
+		}
+
+		const availableIndoor = [];
+		athleteRecords.forEach(r => {
+			if (availableIndoor.indexOf(r.in) < 0)
+				availableIndoor.push(r.in);
+		});
+
+		return <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+			{(availableIndoor.length > 1) &&
+				<FilterIndoor
+					key={indoor}
+					indoor={indoor}
+					onChange={(i) => { this.props.onChange({ indoor: i }) }}
+				/>
+			}
+			{(availableGenres.length > 1) &&
+				<FilterGenres
+					key={genre}
+					genre={genre}
+					genres={genres}
+					availableGenres={availableGenres}
+					onChange={(g) => { this.props.onChange({ genre: g }) }}
+				/>
+			}
+		</div>
+	}
+}
+
 class Records extends Component {
 	constructor(props) {
 		super(props);
@@ -266,39 +364,24 @@ class Records extends Component {
 			ra
 		} = this.datas;
 
+
 		const { indoor, genre } = this.state;
 		const raFiltered = (this.state.currentAthlete === -1) ? ra : ra.filter(ra => ra.a === this.state.currentAthlete);
 		const athleteRecords = records.filter(r => {
 			return raFiltered.findIndex(ra => ra.r === r.i) >= 0
 		});
 
-		const availableGenres = [];
-		athleteRecords.forEach(r => {
-			if (availableGenres.indexOf(r.g) < 0)
-				availableGenres.push(r.g);
-		});
-		if (availableGenres.indexOf(this.state.genre) < 0) {
-			this.setState({ genre: availableGenres[0] })
-			return <></>
-		}
+		const filteredRecords = athleteRecords.filter(r => (r.in === indoor) && (r.g === genre));
 
 		const availableFamilies = [];
-		athleteRecords.forEach(r => {
+		filteredRecords.forEach(r => {
 			if (availableFamilies.indexOf(r.fa) < 0)
 				availableFamilies.push(r.fa);
 		});
-		if (availableFamilies.indexOf(this.state.famille) < 0) {
+		if ((availableFamilies.length > 0) && (availableFamilies.indexOf(this.state.famille) < 0)) {
 			this.setState({ famille: availableFamilies[0] })
 			return <></>
 		}
-
-		const availableIndoor = [];
-		athleteRecords.forEach(r => {
-			if (availableIndoor.indexOf(r.in) < 0)
-				availableIndoor.push(r.in);
-		});
-
-		const filteredRecords = athleteRecords.filter(r => (r.in === indoor) && (r.g === genre));
 
 		const Filters = () => {
 			return (
@@ -309,32 +392,13 @@ class Records extends Component {
 						currentAthlete={this.state.currentAthlete}
 						onChange={(a) => { this.setState({ currentAthlete: parseInt(a) }) }}
 					/>
-
-					<div style={{ display: 'flex', justifyContent: 'center' }}>
-						{(availableIndoor.length > 1) && (
-							<ButtonGroup>
-								<Button
-									isPressed={indoor === 1}
-									onClick={() => { this.setState({ indoor: 1 }) }}
-								>Indoor</Button>
-								<Button
-									isPressed={indoor === 0}
-									onClick={() => { this.setState({ indoor: 0 }) }}
-								>Outdoor</Button>
-							</ButtonGroup>)
-						}
-
-						{(availableGenres.length > 1) && (
-							<ButtonGroup>
-								{availableGenres.map(g =>
-									<Button
-										isPressed={g === genre}
-										onClick={() => { this.setState({ genre: g }) }}
-									>{genres[g]}</Button>
-								)}
-							</ButtonGroup>
-						)}
-					</div>
+					<FilterIOAndGenres
+						athleteRecords={athleteRecords}
+						genres={genres}
+						genre={genre}
+						indoor={indoor}
+						onChange={(c) => { this.setState(c) }}
+					/>
 					<div>&nbsp;</div>
 					<ButtonGroup style={{ display: 'flex', justifyContent: 'center' }}>
 						{(availableFamilies.length > 1) &&
@@ -364,6 +428,104 @@ class Records extends Component {
 			}
 		</div>;
 	}
+}
+
+class AllRecords extends Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			loading: true,
+			currentAthlete: -1,
+			indoor: 0,
+			genre: -1,
+			famille: -1
+		};
+		this.datas = {};
+	};
+
+	componentDidMount() {
+		const me = this;
+		$.ajax({
+			url: easqy.ajaxurl,
+			method: "GET",
+			data: {
+				action: "easqy_records",
+			},
+			success: function (data) {
+				if (data.data.status === 'ok') {
+					me.datas = data.data;
+
+					const availableGenres = [];
+					me.datas.records.forEach(r => {
+						if (availableGenres.indexOf(r.g) < 0)
+							availableGenres.push(r.g);
+					});
+					me.availableGenres = availableGenres;
+
+					me.setState({
+						loading: false,
+						genre: availableGenres.length ? availableGenres[0] : -1
+					});
+				}
+				else
+					me.setState({ loading: false });
+			},
+			error: (data) => {
+				console.log("error", data);
+				me.setState({ loading: false });
+			},
+		});
+	}
+
+	render() {
+
+		if (this.state.loading)
+			return <></>;
+
+		console.log(this.datas);
+
+		const {
+			athletes,
+			categories,
+			epreuves,
+			records,
+			ra
+		} = this.datas;
+
+		const rows = [];
+
+		epreuves.forEach((e, iE) => {
+
+			const cols = [];
+			let count = 0;
+			categories.forEach((c, iC) => {
+
+				const r = records.find(r => (r.e === iE) && (r.c === iC));
+				if (r) {
+					cols.push(<td>
+						<Record
+							hideCategorie={true}
+							record={r}
+							athletes={athletes}
+							categories={categories}
+							ra={ra}
+						/></td>); count++;
+				}
+				else cols.push(<td>&nbsp;-&nbsp;</td>)
+			})
+
+			if (count !== 0)
+				rows.push(<tr><td>{e}</td>{cols} </tr>)
+		})
+
+		return <div className={'records'}>
+			<table>
+				{rows}
+			</table>
+		</div>
+	}
+
 }
 
 (function () {

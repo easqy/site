@@ -8,8 +8,10 @@ class Easqy_Records
     public function __construct(Easqy $easqy)
     {
         $this->load_dependencies();
-        $this->define_admin_hooks($easqy->get_loader());
-        $this->define_public_hooks($easqy->get_loader());
+	    if (is_admin())
+	        $this->define_admin_hooks($easqy->get_loader());
+	    else
+	        $this->define_public_hooks($easqy->get_loader());
 
         $ajax = new Easqy_Records_Ajax();
         $ajax->define_hooks($easqy->get_loader());
@@ -23,8 +25,10 @@ class Easqy_Records
         require_once $dir . '/includes/class-easqy-records-common.php';
         require_once $dir . '/includes/class-easqy-records-db.php';
         require_once $dir . '/includes/class-easqy-records-ajax.php';
-        require_once $dir . '/admin/class-easqy-records-admin.php';
-        require_once $dir . '/public/class-easqy-records-public.php';
+	    if (is_admin())
+		    require_once $dir . '/admin/class-easqy-records-admin.php';
+	    else
+	        require_once $dir . '/public/class-easqy-records-public.php';
     }
 
     public function set_locale(){

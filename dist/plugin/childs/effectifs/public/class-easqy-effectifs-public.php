@@ -11,13 +11,9 @@ class Easqy_Effectifs_public
         $this->load_dependencies();
         $this->define_admin_hooks($easqy->get_loader());
         $this->define_public_hooks($easqy->get_loader());
-        new EasqyEffectifsAjax($easqy);
     }
 
-
     private function load_dependencies() {
-	    $dir = dirname(__FILE__);
-	    require_once $dir . '/class-easqy-effectifs-ajax.php';
     }
 
     private function define_admin_hooks(Easqy_Loader $loader) {

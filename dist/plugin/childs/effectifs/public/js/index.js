@@ -23,7 +23,7 @@ jQuery(function ($) {
 			const me = this;
 			$.ajax({
 				url: easqyeffectifs.ajaxurl,
-				method: "POST",
+				method: "GET",
 				data: {
 					action: action,
 				},
@@ -37,12 +37,14 @@ jQuery(function ($) {
 					//console.log(action, data, me);
 				},
 				error: (data) => {
-					console.log(action, "error", data);
+					me.datas = null;
+					console.error(action, "error", data);
 				},
 
 			}).always(function () {
 				me.loading = false;
-				me.listeners.forEach(l => l.loaded(me.datas));
+				if (me.datas)
+					me.listeners.forEach(l => l.loaded(me.datas));
 				me.listeners = [];
 			});
 		}
@@ -113,7 +115,8 @@ jQuery(function ($) {
 
 		loaded(datas) {
 			this.datas = datas;
-			this.render();
+			if (this.datas)
+				this.render();
 		}
 
 		render() { }

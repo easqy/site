@@ -45,10 +45,19 @@ class Easqy_Admin {
         add_menu_page(
             'EASQY options',
             'EASQY',
-            Easqy::ADMIN_MANAGE_CAPABILITY,
+	        'publish_posts',
             Easqy::ADMIN_MAIN_MENU_SLUG,
             array($this, 'menu_page')
         );
+
+	    add_submenu_page(
+		    Easqy::ADMIN_MAIN_MENU_SLUG,
+		    'Tous les réglages',
+		    'Tous les réglages',
+		    'publish_posts',
+		    Easqy::ADMIN_MAIN_MENU_SLUG,
+		    array($this, 'menu_page')
+	    );
     }
 
     /**

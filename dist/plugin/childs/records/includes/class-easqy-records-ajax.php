@@ -8,13 +8,15 @@ class Easqy_Records_Ajax
 	    // nopriv for users that are not logged in
         $loader->add_action('wp_ajax_easqy_records', $this, 'get_records' );
         $loader->add_action('wp_ajax_nopriv_easqy_records', $this, 'get_records' );
-        $loader->add_action('wp_ajax_easqy_record_del', $this, 'del_record');
-	    $loader->add_action('wp_ajax_easqy_record_save', $this, 'save_record');
 
-	    $loader->add_action('wp_ajax_easqy_record_users', $this, 'users');
-	    $loader->add_action('wp_ajax_easqy_record_user_add', $this, 'user_add');
-	    $loader->add_action('wp_ajax_easqy_record_user_remove', $this, 'user_remove');
+	    if (is_admin()) {
+		    $loader->add_action( 'wp_ajax_easqy_record_del', $this, 'del_record' );
+		    $loader->add_action( 'wp_ajax_easqy_record_save', $this, 'save_record' );
 
+		    $loader->add_action( 'wp_ajax_easqy_record_users', $this, 'users' );
+		    $loader->add_action( 'wp_ajax_easqy_record_user_add', $this, 'user_add' );
+		    $loader->add_action( 'wp_ajax_easqy_record_user_remove', $this, 'user_remove' );
+	    }
     }
 
     static private function check_nonce(){
@@ -69,7 +71,7 @@ class Easqy_Records_Ajax
             'genres' => Easqy_Records_Common::GENRES,
             'categories' => Easqy_Records_Common::CATEGORIES,
             'epreuves' => Easqy_Records_Common::EPREUVES,
-            'familles' => Easqy_Records_Common::EPREUVE_FAMILIES,
+            'familles' => Easqy_Records_Common::FAMILIES,
             'athletes' => $a,
             'records' => $r,
             'ra' => $ra

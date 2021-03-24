@@ -97,6 +97,7 @@ class Easqy_Records_Admin {
             wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
         }
 
+        //echo '<div><p>Gestion des records en maintenance.<br>Réessayez plus tard.</p></div>';
         echo '<div id="easqy-records-adm"></div>';
     }
 
