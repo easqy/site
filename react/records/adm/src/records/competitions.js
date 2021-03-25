@@ -6,14 +6,6 @@ export default class CompetitionRecords extends Component {
 
 	constructor(props) {
 		super(props);
-		const {
-			categories,
-			epreuves,
-			genres,
-			records,
-			athletes, ra
-		} = this.props;
-
 		this.state = {
 			currentRecordId: this.props.currentRecordId || -1
 		};
@@ -29,6 +21,7 @@ export default class CompetitionRecords extends Component {
 			categories,
 			epreuves,
 			genres,
+			environnements,
 			records,
 			ra,
 			athletes,
@@ -48,6 +41,7 @@ export default class CompetitionRecords extends Component {
 							categories={categories}
 							epreuves={epreuves}
 							genres={genres}
+							environnements={environnements}
 							records={records}
 							onCurrentChanged={(rId) => this.onCurrentChanged(rId)}
 							currentRecordId={currentRecordId}
@@ -60,6 +54,7 @@ export default class CompetitionRecords extends Component {
 								record={record}
 								athletes={athletes}
 								categories={categories}
+								environnements={environnements}
 								ra={ra}
 								doDel={() => { this.props.doDelRecord && this.props.doDelRecord(record.i) }}
 								doModify={() => {

@@ -212,25 +212,22 @@ class AthleteSelector extends Component {
 	}
 }
 
-class FilterIndoor extends Component {
+class FilterEnvironement extends Component {
 	constructor(props) {
 		super(props);
 	};
 
 	render() {
 
-		const { indoor } = this.props;
-
+		const { availableEnv, environement, environements } = this.props;
 
 		return <ButtonGroup>
-			<Button
-				isPressed={indoor === 1}
-				onClick={() => { this.props.onChange(1) }}
-			>Indoor</Button>
-			<Button
-				isPressed={indoor === 0}
-				onClick={() => { this.props.onChange(0) }}
-			>Outdoor</Button>
+			{availableEnv.map(e =>
+				<Button
+					isPressed={e === environement}
+					onClick={() => { this.props.onChange(e) }}
+				>{environements[e]}</Button>
+			)}
 		</ButtonGroup>
 	}
 }
@@ -256,18 +253,28 @@ class FilterGenres extends Component {
 	}
 }
 
-class FilterIOAndGenres extends Component {
+class FilterEnvAndGenres extends Component {
 	constructor(props) {
 		super(props);
 	};
 
 	render() {
 
-		const { athleteRecords, genre, indoor, genres } = this.props;
+		const {
+			athleteRecords,
+			genre, genres,
+			environement, environements
+		} = this.props;
+
+		const availableEnv = [];
+		athleteRecords.forEach(r => {
+			if (availableEnv.indexOf(r.en) < 0)
+				availableEnv.push(r.en);
+		});
 
 		const availableGenres = [];
 		athleteRecords.forEach(r => {
-			if (availableGenres.indexOf(r.g) < 0)
+			if ((r.en === environement) && (availableGenres.indexOf(r.g) < 0))
 				availableGenres.push(r.g);
 		});
 		if (availableGenres.indexOf(genre) < 0) {
@@ -275,18 +282,14 @@ class FilterIOAndGenres extends Component {
 			return <></>
 		}
 
-		const availableIndoor = [];
-		athleteRecords.forEach(r => {
-			if (availableIndoor.indexOf(r.in) < 0)
-				availableIndoor.push(r.in);
-		});
-
 		return <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-			{(availableIndoor.length > 1) &&
-				<FilterIndoor
-					key={indoor}
-					indoor={indoor}
-					onChange={(i) => { this.props.onChange({ indoor: i }) }}
+			{(availableEnv.length > 1) &&
+				<FilterEnvironement
+					key={environement}
+					environement={environement}
+					environements={environements}
+					availableEnv={availableEnv}
+					onChange={(e) => { this.props.onChange({ environement: e }) }}
 				/>
 			}
 			{(availableGenres.length > 1) &&
@@ -308,7 +311,7 @@ class Records extends Component {
 		this.state = {
 			loading: true,
 			currentAthlete: -1,
-			indoor: 0,
+			environement: 0,
 			genre: -1,
 			famille: -1
 		};
@@ -357,6 +360,7 @@ class Records extends Component {
 		const {
 			genres,
 			categories,
+			environements,
 			epreuves,
 			familles,
 			athletes,
@@ -365,13 +369,13 @@ class Records extends Component {
 		} = this.datas;
 
 
-		const { indoor, genre } = this.state;
+		const { environement, genre } = this.state;
 		const raFiltered = (this.state.currentAthlete === -1) ? ra : ra.filter(ra => ra.a === this.state.currentAthlete);
 		const athleteRecords = records.filter(r => {
 			return raFiltered.findIndex(ra => ra.r === r.i) >= 0
 		});
 
-		const filteredRecords = athleteRecords.filter(r => (r.in === indoor) && (r.g === genre));
+		const filteredRecords = athleteRecords.filter(r => (r.en === environement) && (r.g === genre));
 
 		const availableFamilies = [];
 		filteredRecords.forEach(r => {
@@ -392,11 +396,12 @@ class Records extends Component {
 						currentAthlete={this.state.currentAthlete}
 						onChange={(a) => { this.setState({ currentAthlete: parseInt(a) }) }}
 					/>
-					<FilterIOAndGenres
+					<FilterEnvAndGenres
 						athleteRecords={athleteRecords}
 						genres={genres}
 						genre={genre}
-						indoor={indoor}
+						environements={environements}
+						environement={environement}
 						onChange={(c) => { this.setState(c) }}
 					/>
 					<div>&nbsp;</div>

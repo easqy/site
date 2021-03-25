@@ -12,7 +12,7 @@ class Easqy_Effectifs_Admin
 
     private function load_dependencies() {
 	    $dir = dirname(__FILE__);
-	    require_once $dir . '/../public/class-easqy-effectifs-ajax.php';
+	    require_once $dir . '/class-easqy-effectifs-ajax.php';
     }
 
     private function define_hooks(Easqy_Loader $loader)

@@ -46,12 +46,13 @@ export default class Records extends Component {
 				security: easqy_records_adm.security
 			},
 			success: function (data) {
-				const { records, athletes, ra, categories, genres, epreuves } = data.data;
+				const { records, athletes, ra, categories, genres, environnements, epreuves } = data.data;
 				//console.log(data.data);
 
 				me.props.categories = categories;
 				me.props.epreuves = epreuves;
 				me.props.genres = genres;
+				me.props.environnements = environnements;
 				me.props.athletes = athletes;
 				me.props.records = records;
 				me.props.ra = ra;
@@ -110,7 +111,6 @@ export default class Records extends Component {
 				if (!data.success)
 					me.setState({ viewType: ViewType.error });
 				else {
-					console.log('record id ', rec, 'saved', data);
 					me.loadRecords();
 				}
 			},
@@ -127,6 +127,7 @@ export default class Records extends Component {
 			categories,
 			epreuves,
 			genres,
+			environnements,
 			records,
 			ra,
 			athletes
@@ -158,6 +159,7 @@ export default class Records extends Component {
 				categories={categories}
 				epreuves={epreuves}
 				genres={genres}
+				environnements={environnements}
 				athletes={athletes}
 				records={records}
 				ra={ra}
@@ -172,6 +174,7 @@ export default class Records extends Component {
 				categories={categories}
 				epreuves={epreuves}
 				genres={genres}
+				environnements={environnements}
 				athletes={athletes}
 				records={records}
 				ra={ra}
@@ -187,6 +190,7 @@ export default class Records extends Component {
 				categories={categories}
 				epreuves={epreuves}
 				genres={genres}
+				environnements={environnements}
 				athletes={athletes}
 				records={records}
 				ra={ra}

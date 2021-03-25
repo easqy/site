@@ -13,7 +13,7 @@ export default class CompetitionTable extends Component {
 			filterCategorie: record ? record.c : -1,
 			filterEpreuve: record ? record.e : -1,
 			filterGenre: record ? record.g : -1,
-			filterIndoor: -1
+			filterenvironnement: record ? record.en : -1
 		};
 	}
 
@@ -29,13 +29,17 @@ export default class CompetitionTable extends Component {
 		this.setState({ filterGenre: c })
 	}
 
+	updateEnvFilter(e) {
+		this.setState({ filterenvironnement: e })
+	}
+
 	setCurrentRecordId(r) {
 		this.props.onCurrentChanged && this.props.onCurrentChanged(r);
 	}
 
 	render() {
-		const { records, categories, epreuves, genres, currentRecordId } = this.props
-		const { filterCategorie, filterEpreuve, filterGenre, filterIndoor } = this.state
+		const { records, categories, epreuves, genres, environnements, currentRecordId } = this.props
+		const { filterCategorie, filterEpreuve, filterGenre, filterenvironnement } = this.state
 
 		const rows = records.filter(r => {
 
@@ -49,8 +53,8 @@ export default class CompetitionTable extends Component {
 			if (result && (filterGenre !== -1))
 				result = (r.g === filterGenre);
 
-			if (result && (filterIndoor !== -1))
-				result = (r.in === filterIndoor);
+			if (result && (filterenvironnement !== -1))
+				result = (r.en === filterenvironnement);
 
 			return result;
 		});
@@ -89,12 +93,12 @@ export default class CompetitionTable extends Component {
 								setState={this.updateGenreFilter.bind(this)}
 								value={filterGenre} />
 						</th>
-						<th>Indoor<br />
-							<SelectControl
-								value={filterIndoor}
-								onChange={(c) => { this.setState({ filterIndoor: parseInt(c) }) }}
-								options={[{ label: 'Tous', value: -1 }, { label: 'Oui', value: 1 }, { label: 'Non', value: 0 }]}
-							/>
+						<th>environnement<br />
+							<EasqySelect
+								allLabel={'Tous'}
+								options={environnements}
+								setState={this.updateEnvFilter.bind(this)}
+								value={filterenvironnement} />
 						</th>
 					</tr>
 				</thead>
@@ -111,7 +115,7 @@ export default class CompetitionTable extends Component {
 									<td>{categories[r.c]}</td>
 									<td>{epreuves[r.e]}</td>
 									<td>{genres[r.g]}</td>
-									<td>{r.in ? 'oui' : 'non'}</td>
+									<td>{environnements[r.en]}</td>
 								</tr>
 							);
 						})

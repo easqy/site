@@ -4,7 +4,8 @@ class Easqy_Records_Common
 {
     const GENRES = array( 'Femme', 'Homme', 'Mixte' );
     const CATEGORIES = array( 'Mixte', 'Masters','Séniors','Espoirs','Juniors','Cadets','Minimes','Benjamins');
-	const FAMILIES = ['Sprint','Demi Fond','Hors Stade','Haies','Sauts','Lancers','Épreuves Combinées','Relais','Marche'];
+	const ENVIRONNEMENT = array( 'Outdoor', 'Indoor', 'Hors stade');
+	const FAMILIES = ['Sprint','Demi Fond','Fond','Haies','Sauts','Lancers','Épreuves Combinées','Relais','Marche'];
     const EPREUVES = array(
 
     // Sprint
@@ -26,7 +27,7 @@ class Easqy_Records_Common
     ,'10000 m'
     ,'15000 m' /* 14 */
 
-	// Hors Stade
+	// Fond
     ,'10 km route'
     ,'15 km route'
     ,'20 km route'

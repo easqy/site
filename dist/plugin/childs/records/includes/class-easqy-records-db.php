@@ -29,7 +29,7 @@ class Easqy_Records_DB
             `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
             `categorie` TINYINT UNSIGNED NOT NULL,
             `epreuve` TINYINT UNSIGNED NOT NULL,
-            `indoor` TINYINT UNSIGNED NOT NULL,
+            `environnement` TINYINT UNSIGNED NOT NULL,
             `genre` TINYINT UNSIGNED NOT NULL,
             `date` DATE NOT NULL,
             `lieu` VARCHAR(64) NOT NULL,
@@ -102,7 +102,7 @@ class Easqy_Records_DB
 		$r = array(
 			'categorie'=> intval( $record['categorie'] ),
 			'epreuve'=> intval( $record['epreuve'] ),
-			'indoor'=> intval( $record['io'] ),
+			'environnement'=> intval( $record['environnement'] ),
 			'genre'=> intval( $record['genre'] ),
 			'date'=> $date,
 			'lieu'=> self::noquote($record['lieu']),

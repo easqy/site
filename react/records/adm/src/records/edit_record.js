@@ -195,7 +195,7 @@ export default class EditRecord extends Component {
 			categorie: (this.props.record && this.props.record.c) || 0,
 			epreuve: (this.props.record && this.props.record.e) || 0,
 			genre: (this.props.record && this.props.record.g) || 0,
-			io: (this.props.record && this.props.record.in) || 0,
+			environnement: (this.props.record && this.props.record.en) || 0,
 			perf: (this.props.record && this.props.record.p) || '',
 			infos: (this.props.record && this.props.record.f) || '',
 			lieu: (this.props.record && this.props.record.l) || '',
@@ -235,15 +235,16 @@ export default class EditRecord extends Component {
 			categories,
 			epreuves,
 			genres,
+			environnements,
 			records,
 			ra,
 			athletes,
 			createMode
 		} = this.props;
-		const { categorie, epreuve, genre, io, athletesDuRecord } = this.state;
+		const { categorie, epreuve, genre, environnement, athletesDuRecord } = this.state;
 
 		const recordFound = () => records.find(r =>
-			(r.c === categorie) && (r.e === epreuve) && (r.g === genre) && (r.in === io)
+			(r.c === categorie) && (r.e === epreuve) && (r.g === genre) && (r.en === environnement)
 		);
 
 		const disableOk = (createMode && recordFound()) || (this.state.perf === '') || (this.state.lieu === '') || (athletesDuRecord.length === 0);
@@ -285,9 +286,9 @@ export default class EditRecord extends Component {
 								<EasqySelect
 									disabled={!createMode}
 									label='&nbsp;'
-									options={['Outdoor', 'Indoor']}
-									setState={(io) => { this.setState({ io }) }}
-									value={io} />
+									options={environnements}
+									setState={(e) => { this.setState({ environnement: e }) }}
+									value={environnement} />
 							</td>
 						</tr>
 					</table>
