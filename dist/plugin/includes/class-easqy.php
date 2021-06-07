@@ -29,10 +29,16 @@
  */
 class Easqy {
 
-    const ADMIN_MAIN_MENU_SLUG = 'easqy-admin-menu';
-    public const ADMIN_MANAGE_CAPABILITY = 'easqy_admin_manage';
+    const PUBLIC_SECURITY_NONCE_NAME='security';
+    const PUBLIC_SECURITY_NONCE_ACTION= EASQY_NAME . '-public-action-nonce';
+    const ADMIN_MAIN_MENU_SLUG = EASQY_NAME . '-admin-menu';
+    const ADMIN_MANAGE_CAPABILITY = EASQY_NAME . '_admin_manage';
 
-    /**
+	static public function check_ajax_nonce($die=true) {
+		return check_ajax_referer( self::PUBLIC_SECURITY_NONCE_ACTION, self::PUBLIC_SECURITY_NONCE_NAME, $die );
+	}
+
+	/**
      * The loader that's responsible for maintaining and registering all hooks that power
      * the plugin.
      *
@@ -60,7 +66,8 @@ class Easqy {
         $this->define_admin_hooks();
         $this->define_public_hooks();
 
-        $records= new Easqy_Childs($this);
+        $plugin_admin= new Easqy_Admin ($this);
+        $records     = new Easqy_Childs($this);
     }
 
     /**
@@ -135,9 +142,6 @@ class Easqy {
      * @access   private
      */
     private function define_admin_hooks() {
-
-        $plugin_admin = new Easqy_Admin( );
-        $plugin_admin->define_hooks($this->loader);
     }
 
     /**
@@ -150,13 +154,22 @@ class Easqy {
     private function define_public_hooks() {
 
         $plugin_public = new Easqy_Public( );
-        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+        $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+        $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
         $this->loader->add_action('wp_head', $this, 'wp_head');
+		if (is_admin())
+	        $this->loader->add_action('admin_head', $this, 'wp_head');
     }
 
     public function wp_head() {
-        echo '<script>const easqy={ajaxurl:"' . admin_url( 'admin-ajax.php' ) . '"};</script>';
+        ?>
+    	<script>
+		    const easqy={
+				ajaxurl: "<?= admin_url( 'admin-ajax.php' ) ?>",
+				<?= self::PUBLIC_SECURITY_NONCE_NAME ?> : "<?= wp_create_nonce(self::PUBLIC_SECURITY_NONCE_ACTION ) ?>"
+            }; Object.freeze(easqy);
+	    </script>
+		<?php
     }
 
     /**

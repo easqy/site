@@ -19,21 +19,8 @@ class Easqy_Records_Ajax
 	    }
     }
 
-    static private function check_nonce(){
-	    if ( ! check_ajax_referer( 'record_admin_nonce', 'security', false ) ) {
-
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
-	    }
-	}
-
-    public function get_adm_records() {
-
-		self::check_nonce();
-	    return $this->get_records();
-    }
-
     public function get_records() {
+	    Easqy::check_ajax_nonce();
 
         $a = array();
         foreach( Easqy_Records_DB::athletes() as $row)
@@ -81,8 +68,7 @@ class Easqy_Records_Ajax
     }
 
     public function del_record() {
-
-	    self::check_nonce();
+	    Easqy::check_ajax_nonce();
 
         if (!isset($_POST['recordId']))
         {
@@ -100,7 +86,7 @@ class Easqy_Records_Ajax
     }
 
 	public function save_record() {
-		self::check_nonce();
+		Easqy::check_ajax_nonce();
 		if (!isset($_POST['record']))
 		{
 			wp_send_json_error( array('status' => 'error', 'message' => 'no record') );
@@ -121,7 +107,7 @@ class Easqy_Records_Ajax
 	}
 
 	public function users() {
-		self::check_nonce();
+		Easqy::check_ajax_nonce();
 
 		$result= array();
 		foreach (get_users() as $u)
@@ -143,7 +129,7 @@ class Easqy_Records_Ajax
 	}
 
 	public function user_add() {
-		self::check_nonce();
+		Easqy::check_ajax_nonce();
 
 		if (!isset($_POST['userId'])){
 			wp_send_json_error( 'no user id' );
@@ -170,7 +156,7 @@ class Easqy_Records_Ajax
 	}
 
 	public function user_remove() {
-		self::check_nonce();
+		Easqy::check_ajax_nonce();
 
 		if (!isset($_POST['userId'])){
 			wp_send_json_error( 'no user id' );

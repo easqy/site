@@ -22,6 +22,8 @@
  */
 class Easqy_Admin {
 
+	const SCRIPT_STYLE_HANDLE = EASQY_NAME . '-admin';
+
     /**
      * Initialize the class and set its properties.
      *
@@ -29,11 +31,15 @@ class Easqy_Admin {
      * @param      string    $plugin_name       The name of this plugin.
      * @param      string    $version    The version of this plugin.
      */
-    public function __construct() {
-    }
+    public function __construct(Easqy $easqy) {
+		$this->define_hooks( $easqy->get_loader() );
 
+        $dir = dirname(__FILE__);
+        require_once $dir . '/class-easqy-admin-ajax.php';
+		$easqyAdminAjax = new Easqy_Admin_Ajax($easqy);
+	}
 
-    public function define_hooks( $loader )
+	public function define_hooks( Easqy_Loader $loader )
     {
         $loader->add_action('admin_menu', $this, 'define_menus' );
         $loader->add_action('admin_enqueue_scripts', $this, 'enqueue_styles');
@@ -67,20 +73,6 @@ class Easqy_Admin {
      */
     public function enqueue_styles() {
 
-        /**
-         * This function is provided for demonstration purposes only.
-         *
-         * An instance of this class should be passed to the run() function
-         * defined in Plugin_Name_Loader as all of the hooks are defined
-         * in that particular class.
-         *
-         * The Plugin_Name_Loader will then create the relationship
-         * between the defined hooks and the functions defined in this
-         * class.
-         */
-
-        //wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/plugin-name-admin.css', array(), $this->version, 'all' );
-
     }
 
     /**
@@ -90,20 +82,18 @@ class Easqy_Admin {
      */
     public function enqueue_scripts() {
 
-        /**
-         * This function is provided for demonstration purposes only.
-         *
-         * An instance of this class should be passed to the run() function
-         * defined in Plugin_Name_Loader as all of the hooks are defined
-         * in that particular class.
-         *
-         * The Plugin_Name_Loader will then create the relationship
-         * between the defined hooks and the functions defined in this
-         * class.
-         */
+        $script_asset = require( plugin_dir_path(__FILE__) . 'js/index.asset.php' );
+        wp_enqueue_script(
+            self::SCRIPT_STYLE_HANDLE,
+            plugins_url( 'js/index.js', __FILE__ ),
+            $script_asset['dependencies'],
+            time(), true );
 
-        //wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/plugin-name-admin.js', array( 'jquery' ), $this->version, false );
+        $inlineCode = 'const easqy_admin=' . json_encode( [
+            'ajaxurl' => admin_url( 'admin-ajax.php' )
+        ] ) . ';';
 
+        wp_add_inline_script(self::SCRIPT_STYLE_HANDLE, $inlineCode,'before');
     }
 
     function menu_page()

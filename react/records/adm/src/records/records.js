@@ -43,7 +43,7 @@ export default class Records extends Component {
 			method: "GET",
 			data: {
 				action: "easqy_records",
-				security: easqy_records_adm.security
+				security: easqy.security
 			},
 			success: function (data) {
 				const { records, athletes, ra, categories, genres, environnements, epreuves } = data.data;
@@ -71,11 +71,11 @@ export default class Records extends Component {
 	doDelRecord(rId) {
 		const me = this;
 		$.ajax({
-			url: easqy_records_adm.ajaxurl,
+			url: easqy.ajaxurl,
 			method: "POST",
 			data: {
 				action: "easqy_record_del",
-				security: easqy_records_adm.security,
+				security: easqy.security,
 				recordId: rId
 			},
 			success: function (data) {
@@ -100,11 +100,11 @@ export default class Records extends Component {
 
 		const me = this;
 		$.ajax({
-			url: easqy_records_adm.ajaxurl,
+			url: easqy.ajaxurl,
 			method: "POST",
 			data: {
 				action: "easqy_record_save",
-				security: easqy_records_adm.security,
+				security: easqy.security,
 				record: rec
 			},
 			success: function (data) {

@@ -21,6 +21,7 @@ class Latest_results extends Component {     // instead of: ...extends React.Com
 			method: "POST",
 			data: {
 				action: "easqy_sc_latest_results",
+				security: easqy.security
 			},
 			success: function (data) {
 				if (data.success)
@@ -62,6 +63,9 @@ class Latest_results extends Component {     // instead of: ...extends React.Com
 								((i.athlete !== null) && (<>&nbsp;:&nbsp;<strong>{i.athlete.name}</strong><br /></>)) ||
 								((i.athlete === null) && (<>&nbsp;</>))
 							}
+						</div>
+						<div>
+							&nbsp;:&nbsp;<strong>{i.perf}</strong>
 						</div>
 					</div>
 				</div>

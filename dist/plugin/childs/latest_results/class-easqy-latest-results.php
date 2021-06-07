@@ -21,7 +21,6 @@ class Easqy_Latest_Results
         $loader->add_shortcode('easqy_latest_results', $this, 'latest_results');
         $loader->add_action( 'wp_ajax_easqy_sc_latest_results', $this, 'ajax_latest_results' );
         $loader->add_action( 'wp_ajax_nopriv_easqy_sc_latest_results', $this, 'ajax_latest_results' );
-
     }
 
     public function latest_results()
@@ -59,7 +58,7 @@ class Easqy_Latest_Results
         $maxCount = max(1, intval($maxCount));
         $url='https://bases.athle.fr/asp.net/liste.aspx?frmpostback=true&frmbase=resultats&frmmode=1&frmespace=0&frmsaison='
             .$year
-            .'2020&frmclub=078140&frmnom=&frmprenom=&frmsexe=&frmlicence=&frmdepartement=&frmligue=&frmcomprch=';
+            .'&frmclub=078140&frmnom=&frmprenom=&frmsexe=&frmlicence=&frmdepartement=&frmligue=&frmcomprch=';
 
         $response = wp_remote_get( $url );
         if ( is_wp_error( $response ) )
@@ -78,7 +77,7 @@ class Easqy_Latest_Results
         $result = array();
         for ($i=0; $i<$lineCount; ++$i) {
 
-            $line= array();
+			$line= array();
             $line['date'] =  trim($m[10*$i + 0][1]);
             $athlete = trim($m[10*$i + 1][1]);
             $line['athlete']= null;
@@ -120,6 +119,7 @@ class Easqy_Latest_Results
     }
 
     public function ajax_latest_results() {
+		Easqy::check_ajax_nonce();
 
         $currentYear = intval(date("Y"));
         $result = self::extract_latest_results($currentYear, 10);
@@ -135,7 +135,6 @@ class Easqy_Latest_Results
             if ($lastYearResults) {
                 $result = array_merge( $result, $lastYearResults);
             }
-
         }
 
         wp_send_json_success( $result );

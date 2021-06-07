@@ -22,10 +22,11 @@ jQuery(function ($) {
 
 			const me = this;
 			$.ajax({
-				url: easqyeffectifs.ajaxurl,
+				url: easqy.ajaxurl,
 				method: "GET",
 				data: {
 					action: action,
+					security: easqy.security
 				},
 				success: function (data) {
 
@@ -59,7 +60,7 @@ jQuery(function ($) {
 
 				if (instance == null) {
 					instance = new AjaxLoader('easqy_effectifs');
-					instance.constructeur = null;
+					instance.constructor = null;
 				}
 
 				instance.addListener(listener);
@@ -78,7 +79,7 @@ jQuery(function ($) {
 
 				if (instance == null) {
 					instance = new AjaxLoader('easqy_renouvellements');
-					instance.constructeur = null;
+					instance.constructor = null;
 				}
 
 				instance.addListener(listener);
@@ -96,7 +97,7 @@ jQuery(function ($) {
 
 				if (instance == null) {
 					instance = new AjaxLoader('easqy_effectifs_geographiques');
-					instance.constructeur = null;
+					instance.constructor = null;
 				}
 
 				instance.addListener(listener);
@@ -203,9 +204,10 @@ jQuery(function ($) {
 			this.cumul = [];
 			datas.years.forEach((y, i) => {
 				this.cumul.push(0);
-				datas.categories.effectifs.forEach(e => {
-					this.cumul[this.cumul.length - 1] += e[2 * i + 0] + e[2 * i + 1];
-				});
+				const cats = datas.categories;
+				Object.keys(cats).forEach(c => {
+					this.cumul[this.cumul.length - 1] += cats[c][2 * i + 0] + cats[c][2 * i + 1];
+				})
 			});
 			super.loaded(datas);
 		}
@@ -249,18 +251,22 @@ jQuery(function ($) {
 		loaded(d) {
 			const datas = d.effectifs;
 
-			this.hommeIndex = datas.order[0] == 'M' ? 0 : 1;
-			this.femmeIndex = this.hommeIndex == 0 ? 1 : 0;
 			this.cumulH = [];
 			this.cumulF = [];
 
 			datas.years.forEach((y, i) => {
+
+				const hi = (2 * i) + (datas.genres[2 * i + 0] === 'M' ? 0 : 1)
+				const fi = (2 * i) + (datas.genres[2 * i + 0] === 'F' ? 0 : 1)
+
 				let h = 0;
 				let f = 0;
-				datas.categories.effectifs.forEach(e => {
-					h += e[2 * i + this.hommeIndex];
-					f += e[2 * i + this.femmeIndex];
-				});
+				const cats = datas.categories;
+				Object.keys(cats).forEach(c => {
+					h += cats[c][hi];
+					f += cats[c][fi];
+				})
+
 				this.cumulH.push(h);
 				this.cumulF.push(f);
 			});
@@ -305,26 +311,25 @@ jQuery(function ($) {
 
 		loaded(d) {
 			const datas = d.effectifs;
-
-			this.hommeIndex = datas.order[0] == 'M' ? 0 : 1;
-			this.femmeIndex = this.hommeIndex == 0 ? 1 : 0;
 			this.prcH = [];
 			this.prcF = [];
 
 			datas.years.forEach((y, i) => {
 
+				const hi = (2 * i) + (datas.genres[2 * i + 0] === 'M' ? 0 : 1)
+				const fi = (2 * i) + (datas.genres[2 * i + 0] === 'F' ? 0 : 1)
+
 				let h = 0;
 				let f = 0;
-
-				datas.categories.effectifs.forEach(e => {
-					h += e[2 * i + this.hommeIndex];
-					f += e[2 * i + this.femmeIndex];
-				});
+				const cats = datas.categories;
+				Object.keys(cats).forEach(c => {
+					h += cats[c][hi];
+					f += cats[c][fi];
+				})
 
 				this.prcH.push((100 * h) / (h + f));
 				this.prcF.push((100 * f) / (h + f));
 			});
-
 			super.loaded(datas);
 		}
 
@@ -391,8 +396,14 @@ jQuery(function ($) {
 
 		loaded(d) {
 			const datas = d.renouvellements;
-			this.nouveaux = datas.categories.renouvellements.map(r => r[0] - r[1]);
-			this.renouvellements = datas.categories.renouvellements.map(r => r[1]);
+			this.d = { nouveaux: [], renouvellements: [], categories: [] };
+
+			Object.keys(datas).forEach(k => {
+				this.d.categories.push(k);
+				this.d.nouveaux.push(datas[k][0] - datas[k][1]);
+				this.d.renouvellements.push(datas[k][1]);
+			})
+
 			super.loaded(datas);
 		}
 
@@ -407,13 +418,13 @@ jQuery(function ($) {
 			options.chart.stacked = true;
 			options.chart.dropShadow.enabled = false;
 
-			options.series = [{ name: 'Renouvellements', data: this.renouvellements }, { name: 'Nouveaux adhérents', data: this.nouveaux }];
+			options.series = [{ name: 'Renouvellements', data: this.d.renouvellements }, { name: 'Nouveaux adhérents', data: this.d.nouveaux }];
 			options.colors = ['var(--secondary-color)', '#0d2366'];
 			options.dataLabels = {
 				enabled: true,
 				offsetY: 5,
 				formatter: function (val, { dataPointIndex, seriesIndex }) {
-					const prcRenouvellements = (me.renouvellements[dataPointIndex] / (me.renouvellements[dataPointIndex] + me.nouveaux[dataPointIndex]));
+					const prcRenouvellements = (me.d.renouvellements[dataPointIndex] / (me.d.renouvellements[dataPointIndex] + me.d.nouveaux[dataPointIndex]));
 					const prc = 100.0 * ((seriesIndex === 0) ? prcRenouvellements : (1.0 - prcRenouvellements));
 					return val + ' (' + prc.toFixed(1) + "%)";
 				},
@@ -422,7 +433,7 @@ jQuery(function ($) {
 					colors: ["#eee"]
 				}
 			};
-			options.xaxis = { categories: this.datas.categories.names };
+			options.xaxis = { categories: me.d.categories };
 
 
 			$(this.id).html('');
@@ -548,7 +559,7 @@ jQuery(function ($) {
 
 	const charts = [];
 
-	easqyeffectifs.charts.forEach((c, i) => {
+	easqy.effectifs.charts.forEach((c, i) => {
 
 		const id = '[easqy-effectifs-index=' + (1 + i) + ']';
 		let chart = null;

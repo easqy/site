@@ -27,7 +27,10 @@ class DateBlock extends Component {
 					<DateTimePicker
 						label="My Date/Time Picker"
 						currentDate={this.state.date}
-						onChange={(d) => { this.setState({ date: new Date(d) }) }}
+						onChange={(d) => {
+							this.props.onDateChanged && this.props.onDateChanged(new Date(d))
+							this.setState({ date: new Date(d) })
+						}}
 						is12Hour={false}
 					/>
 				</Popover>
@@ -293,7 +296,10 @@ export default class EditRecord extends Component {
 						</tr>
 					</table>
 					<hr />
-					<DateBlock date={this.state.date} />
+					<DateBlock
+						date={this.state.date}
+						onDateChanged={(d) => { this.setState({ date: d }) }}
+					/>
 					<hr />
 					<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
 						<TextControl

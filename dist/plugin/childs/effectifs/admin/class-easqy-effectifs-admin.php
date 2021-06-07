@@ -6,7 +6,7 @@ class Easqy_Effectifs_Admin
 
         $this->load_dependencies();
         $this->define_hooks($easqy->get_loader());
-	    new EasqyEffectifsAjax($easqy);
+	    new Easqy_Effectifs_Ajax($easqy);
     }
 
 

@@ -25,6 +25,9 @@ class Easqy_Activator {
 	public static function activate() {
         require_once EASQY_CHILDS_DIR . '/records/includes/class-easqy-records-activator.php';
         Easqy_Records_Activator::activate();
-    }
+
+        require_once EASQY_CHILDS_DIR . '/encadrement/admin/class-easqy-encadrement-activator.php';
+        Easqy_Encadrement_Activator::activate();
+	}
 
 }

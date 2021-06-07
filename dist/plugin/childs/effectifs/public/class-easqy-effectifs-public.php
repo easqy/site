@@ -9,17 +9,13 @@ class Easqy_Effectifs_public
     public function __construct(Easqy $easqy) {
 
         $this->load_dependencies();
-        $this->define_admin_hooks($easqy->get_loader());
-        $this->define_public_hooks($easqy->get_loader());
+        $this->define_hooks($easqy->get_loader());
     }
 
     private function load_dependencies() {
     }
 
-    private function define_admin_hooks(Easqy_Loader $loader) {
-    }
-
-    private function define_public_hooks(Easqy_Loader $loader)
+    private function define_hooks(Easqy_Loader $loader)
     {
         $loader->add_shortcode('easqy_effectifs', $this, 'shortcode');
 	    $loader->add_action('wp_enqueue_scripts', $this, 'enqueue_styles');
@@ -69,14 +65,13 @@ class Easqy_Effectifs_public
 	    $inlineCode = '';
 	    if (self::$codeIndex === 1)
 	    {
-		    $inlineCode = 'const easqyeffectifs=';
+		    $inlineCode = 'easqy.effectifs=';
 		    $inlineCode.= json_encode( [
-			    'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			    'charts' => array()
 		    ] ) ;
 		    $inlineCode.= ';';
 	    }
-	    $inlineCode .= 'easqyeffectifs.charts.push('
+	    $inlineCode .= 'easqy.effectifs.charts.push('
 	                   .	json_encode( array( 'type' => $type, 'title' => $title))
 	                   .	');';
 

@@ -31,11 +31,11 @@ export default class Users extends Component {
 
 		const me = this;
 		$.ajax({
-			url: easqy_records_adm.ajaxurl,
+			url: easqy.ajaxurl,
 			method: "GET",
 			data: {
 				action: "easqy_record_users",
-				security: easqy_records_adm.security
+				security: easqy.security
 			},
 			success: function (data) {
 				if (data.success) {
@@ -54,11 +54,11 @@ export default class Users extends Component {
 		this.setState({ viewType: ViewType.loading });
 		const me = this;
 		$.ajax({
-			url: easqy_records_adm.ajaxurl,
+			url: easqy.ajaxurl,
 			method: "POST",
 			data: {
 				action: "easqy_record_user_add",
-				security: easqy_records_adm.security,
+				security: easqy.security,
 				userId: userId
 			},
 			success: function (data) {
@@ -78,11 +78,11 @@ export default class Users extends Component {
 		this.setState({ viewType: ViewType.loading });
 		const me = this;
 		$.ajax({
-			url: easqy_records_adm.ajaxurl,
+			url: easqy.ajaxurl,
 			method: "POST",
 			data: {
 				action: "easqy_record_user_remove",
-				security: easqy_records_adm.security,
+				security: easqy.security,
 				userId: userId
 			},
 			success: function (data) {

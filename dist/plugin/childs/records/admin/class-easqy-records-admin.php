@@ -118,15 +118,5 @@ class Easqy_Records_Admin {
             plugins_url( 'js/index.js', __FILE__ ),
             $script_asset['dependencies'],
             time(), true );
-
-        $inlineCode = 'const easqy_records_adm=';
-        $inlineCode.= json_encode( [
-            'ajaxurl' => admin_url( 'admin-ajax.php' ),
-	        'security'=> wp_create_nonce('record_admin_nonce')
-        ] ) ;
-        $inlineCode.= ';';
-        wp_add_inline_script($handle, $inlineCode,'before');
 	}
-
-
 }

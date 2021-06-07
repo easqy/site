@@ -212,21 +212,21 @@ class AthleteSelector extends Component {
 	}
 }
 
-class FilterEnvironement extends Component {
+class FilterEnvironnement extends Component {
 	constructor(props) {
 		super(props);
 	};
 
 	render() {
 
-		const { availableEnv, environement, environements } = this.props;
+		const { availableEnv, environnement, environnements } = this.props;
 
 		return <ButtonGroup>
 			{availableEnv.map(e =>
 				<Button
-					isPressed={e === environement}
+					isPressed={e === environnement}
 					onClick={() => { this.props.onChange(e) }}
-				>{environements[e]}</Button>
+				>{environnements[e]}</Button>
 			)}
 		</ButtonGroup>
 	}
@@ -261,35 +261,18 @@ class FilterEnvAndGenres extends Component {
 	render() {
 
 		const {
-			athleteRecords,
-			genre, genres,
-			environement, environements
+			availableGenres, genre, genres,
+			availableEnv, environnement, environnements
 		} = this.props;
-
-		const availableEnv = [];
-		athleteRecords.forEach(r => {
-			if (availableEnv.indexOf(r.en) < 0)
-				availableEnv.push(r.en);
-		});
-
-		const availableGenres = [];
-		athleteRecords.forEach(r => {
-			if ((r.en === environement) && (availableGenres.indexOf(r.g) < 0))
-				availableGenres.push(r.g);
-		});
-		if (availableGenres.indexOf(genre) < 0) {
-			this.props.onChange({ genre: availableGenres[0] })
-			return <></>
-		}
 
 		return <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
 			{(availableEnv.length > 1) &&
-				<FilterEnvironement
-					key={environement}
-					environement={environement}
-					environements={environements}
+				<FilterEnvironnement
+					key={environnement}
+					environnement={environnement}
+					environnements={environnements}
 					availableEnv={availableEnv}
-					onChange={(e) => { this.props.onChange({ environement: e }) }}
+					onChange={(e) => { this.props.onChange({ environnement: e }) }}
 				/>
 			}
 			{(availableGenres.length > 1) &&
@@ -311,7 +294,7 @@ class Records extends Component {
 		this.state = {
 			loading: true,
 			currentAthlete: -1,
-			environement: 0,
+			environnement: 0,
 			genre: -1,
 			famille: -1
 		};
@@ -324,6 +307,7 @@ class Records extends Component {
 			method: "GET",
 			data: {
 				action: "easqy_records",
+				security: easqy.security
 			},
 			success: function (data) {
 				if (data.data.status === 'ok') {
@@ -360,7 +344,7 @@ class Records extends Component {
 		const {
 			genres,
 			categories,
-			environements,
+			environnements,
 			epreuves,
 			familles,
 			athletes,
@@ -368,24 +352,47 @@ class Records extends Component {
 			ra
 		} = this.datas;
 
-
-		const { environement, genre } = this.state;
+		// 1. filter athlete
 		const raFiltered = (this.state.currentAthlete === -1) ? ra : ra.filter(ra => ra.a === this.state.currentAthlete);
-		const athleteRecords = records.filter(r => {
+		let filteredRecords = records.filter(r => {
 			return raFiltered.findIndex(ra => ra.r === r.i) >= 0
 		});
 
-		const filteredRecords = athleteRecords.filter(r => (r.en === environement) && (r.g === genre));
+		const { environnement, genre } = this.state;
+
+		// check for environments
+		const availableEnv = [];
+		filteredRecords.forEach(r => {
+			if (availableEnv.indexOf(r.en) < 0)
+				availableEnv.push(r.en);
+		});
+		if ((availableEnv.length > 0) && (availableEnv.indexOf(environnement) < 0))
+		{
+			this.setState({environnement : availableEnv[0]});
+			return <></>;
+		}
+		if (availableEnv.length > 1)
+			filteredRecords = filteredRecords.filter(r => (r.en === environnement) );
+
+		// check for genres
+		const availableGenres = [];
+		filteredRecords.forEach(r => {
+			if (availableGenres.indexOf(r.g) < 0)
+				availableGenres.push(r.g);
+		});
+		if ((availableGenres.length > 0) && (availableGenres.indexOf(genre) <  0))
+		{
+			this.setState({genre : availableGenres[0]});
+			return <></>;
+		}
+		if (availableGenres.length > 1)
+			filteredRecords = filteredRecords.filter(r => (r.g === genre) );
 
 		const availableFamilies = [];
 		filteredRecords.forEach(r => {
 			if (availableFamilies.indexOf(r.fa) < 0)
 				availableFamilies.push(r.fa);
 		});
-		if ((availableFamilies.length > 0) && (availableFamilies.indexOf(this.state.famille) < 0)) {
-			this.setState({ famille: availableFamilies[0] })
-			return <></>
-		}
 
 		const Filters = () => {
 			return (
@@ -397,11 +404,13 @@ class Records extends Component {
 						onChange={(a) => { this.setState({ currentAthlete: parseInt(a) }) }}
 					/>
 					<FilterEnvAndGenres
-						athleteRecords={athleteRecords}
-						genres={genres}
+						availableGenres={availableGenres}
 						genre={genre}
-						environements={environements}
-						environement={environement}
+						genres={genres}
+
+						availableEnv={availableEnv}
+						environnement={environnement}
+						environnements={environnements}
 						onChange={(c) => { this.setState(c) }}
 					/>
 					<div>&nbsp;</div>
